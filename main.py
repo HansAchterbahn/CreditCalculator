@@ -33,7 +33,7 @@ if __name__ == '__main__':
             restschuld = restschuld - tilgung
             # Wenn die Restschuld kleiner als Null ist, wird die Letzte Rate und der letzte Monat berechnet
             if restschuld < 0:
-                tilgung_letzte = tilgung - restschuld
+                tilgung_letzte = tilgung + restschuld
                 restschuld = 0
                 monat_letzter = int(i)
                 break
