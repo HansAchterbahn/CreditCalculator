@@ -21,20 +21,23 @@ if __name__ == '__main__':
         #preis_wiese,
         #preis_acker
     ]
+    hauskredit_kfw = 100000
+    hauskredit_bank = sum(einzelposten) - hauskredit_kfw
+    kaufnebenkosten = 35000
 
 
-    kredite_konditionen = [
-        {
+    kredite_konditionen = {
+        'Haus-Bank': {
             # Hauptkredit Sparkasse / VR-Bank / etc.
-            0: {'zinssatz': 0.03, 'monatliche_rate': 500, 'sondertilgung': 0, 'kredit': 18000},
+            0: {'zinssatz': 0.04, 'monatliche_rate': 1700, 'sondertilgung': 0, 'kredit': hauskredit_bank},
             #1: {'zinssatz': 0.03, 'monatliche_rate': 500, 'sondertilgung': 0, 'kredit': 0},
             #  5:  {'zinssatz': 0.04, 'monatliche_rate': 6000, 'sondertilgung': 30000},
             #  6:  {'zinssatz': 0.04, 'monatliche_rate': 6000, 'sondertilgung': 0},
             #  10: {'zinssatz': 0.03, 'monatliche_rate': 6000, 'sondertilgung': 0}
         },
-        {
+        'Haus-KfW': {
             # KfW Kredit 124 - Eigentumserwerb
-            0: {'zinssatz': 0.03, 'monatliche_rate': 500, 'sondertilgung': 0, 'kredit': 18000},
+            0: {'zinssatz': 0.0371, 'monatliche_rate': 500, 'sondertilgung': 0, 'kredit': hauskredit_kfw},
             #1: {'zinssatz': 0.03, 'monatliche_rate': 500, 'sondertilgung': 0, 'kredit': 0},
             #0: {'zinssatz': 0.037, 'monatliche_rate': 500, 'sondertilgung': 0, 'kredit': 50000},
             #0: {'zinssatz': 0.0219, 'monatliche_rate': 1800, 'sondertilgung': 0},
@@ -42,11 +45,11 @@ if __name__ == '__main__':
             #3:  {'zinssatz': 0.037, 'monatliche_rate': 500, 'sondertilgung': 0},
             #10: {'zinssatz': 0.03, 'monatliche_rate': 6000, 'sondertilgung': 0}
         },
-        # {
-        #     # Sonderkredit Kaufnebenkosten
-        #     0: {'zinssatz': 0.05, 'monatliche_rate': 200, 'sondertilgung': 0, 'kredit': 35000}
-        # }
-    ]
+        'Haus-Kaufnebenkosten': {
+            # Sonderkredit Kaufnebenkosten
+            0: {'zinssatz': 0.03, 'monatliche_rate': 1200, 'sondertilgung': 0, 'kredit': kaufnebenkosten},
+        }
+    }
 
     # Output Container
     jahre_output = []
@@ -56,10 +59,10 @@ if __name__ == '__main__':
     sondertilgungen_output = []
     kredite_output = []
 
-    for k, kondition in enumerate(kredite_konditionen):
+    for kreditgeber, kondition in kredite_konditionen.items():
         print()
-        print("Kredit",k)
-        print("--------")
+        print(kreditgeber)
+        print("-"*len(kreditgeber))
 
 
 
