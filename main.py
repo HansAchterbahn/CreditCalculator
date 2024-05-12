@@ -19,12 +19,13 @@ if __name__ == '__main__':
 #        'Saal Ausbau 1.OG':                 100000,  # geschätzt
     }
 
+    # Kreditsummen
     hauskredit_kfw = 100000
     hauskredit_bank = sum(initiale_kosten.values()) - hauskredit_kfw
     kaufnebenkosten = 35000
 
-
-    kredite_konditionen = {
+    # Kreditgeber und deren Konditionen mit allen Änderungen über die Jahre
+    kreditgeber_konditionen = {
         'Bank (Haus+Sanierung)': {
             # Hauptkredit Sparkasse / VR-Bank / etc.
             0: {'zinssatz': 0.04, 'monatliche_rate': 1700, 'sondertilgung': 0, 'kredit': hauskredit_bank},
@@ -39,21 +40,21 @@ if __name__ == '__main__':
         }
     }
 
-    # Output Container
-    jahre_pro_kredit = []
-    zinsen_pro_kredit = []
-    restschulden_pro_kredit = []
-    tilgungen_pro_kredit = []
-    sondertilgungen_pro_kredit = []
-    kredite_pro_kredit = []
+    # Kredit Ausgangsdaten im Jahresverlauf
+    kredite_jahresverlauf = dict({
+        'Jahres Array': [],
+        'Zinsen Array': [],
+        'Restschulden Array' : [],
+        'Tilgungen Array': [],
+        'Sondertilgungen Array': [],
+        'Kredite Array': []
+    })
 
-    for kreditgeber, kondition in kredite_konditionen.items():
+    # Durchlauf der einzelnen Kredite mit ihren jeweiligen Konditionen pro Jahr
+    for kreditgeber, konditionen in kreditgeber_konditionen.items():
         print()
         print(kreditgeber)
         print("-"*len(kreditgeber))
-
-
-
 
         # Init der Variablen
         jahr = 0
@@ -69,18 +70,18 @@ if __name__ == '__main__':
         sondertilgungen = []
         kredite = []
 
-        # Durchlaufe die Jahre bis die Restschuld beglichen ist
+        # Durchlaufe für den aktuellen Kredit die Jahre bis die Restschuld beglichen ist
         while True:
             # Einmalige Änderungen zurücksetzen
             sondertilgung = 0
             kredit = 0
 
             # Prüfen, ob sich für das aktuelle Jahr Änderungen ergeben haben
-            if jahr in kondition:
-                zinssatz        = kondition[jahr]['zinssatz']
-                rate_monatlich  = kondition[jahr]['monatliche_rate']
-                sondertilgung   = kondition[jahr]['sondertilgung']
-                kredit          = kondition[jahr]['kredit']
+            if jahr in konditionen:
+                zinssatz        = konditionen[jahr]['zinssatz']
+                rate_monatlich  = konditionen[jahr]['monatliche_rate']
+                sondertilgung   = konditionen[jahr]['sondertilgung']
+                kredit          = konditionen[jahr]['kredit']
 
             # Neue Kreditsumme zu Restschulden addieren (Initial + Nachschuss)
             restschuld += kredit
@@ -131,37 +132,40 @@ if __name__ == '__main__':
             # Jahr
             jahr += 1
 
-        jahre_pro_kredit.append(jahre)
-        zinsen_pro_kredit.append(zinsen)
-        restschulden_pro_kredit.append(restschulden)
-        tilgungen_pro_kredit.append(tilgungen)
-        sondertilgungen_pro_kredit.append(sondertilgungen)
-        kredite_pro_kredit.append(kredite)
+        kredite_jahresverlauf['Jahres Array'].append(jahre)
+        kredite_jahresverlauf['Zinsen Array'].append(zinsen)
+        kredite_jahresverlauf['Restschulden Array'].append(restschulden)
+        kredite_jahresverlauf['Tilgungen Array'].append(tilgungen)
+        kredite_jahresverlauf['Sondertilgungen Array'].append(sondertilgungen)
+        kredite_jahresverlauf['Kredite Array'].append(kredite)
 
-    jahre_sum               = []
-    zinsen_sum              = []
-    restschulden_sum        = []
-    tilgungen_sum           = []
-    sondertilgungen_sum     = []
-    monatliche_rate_sum     = []
-    kredite_sum             = []
+    # Dict in dem alle Kredite zusammensummiert werden
+    kredite_kumuliert = dict({
+        'Jahre':            [],
+        'Zinsen':           [],
+        'Restschulden':     [],
+        'Tilgungen':        [],
+        'Sondertilgungen':  [],
+        'Monatliche Rate':  [],
+        'Kredite':          [],
+    })
 
-    for i in range(len(jahre_pro_kredit)):
-        if len(jahre_sum) < len(jahre_pro_kredit[i]):
-            jahre_sum = jahre_pro_kredit[i]
+    for i in range(len(kredite_jahresverlauf['Jahres Array'])):
+        if len(kredite_kumuliert['Jahre']) < len(kredite_jahresverlauf['Jahres Array'][i]):
+            kredite_kumuliert['Jahre'] = kredite_jahresverlauf['Jahres Array'][i]
 
-        zinsen_sum              = add_list(zinsen_sum, zinsen_pro_kredit[i])
-        restschulden_sum        = add_list(restschulden_sum, restschulden_pro_kredit[i])
-        tilgungen_sum           = add_list(tilgungen_sum, tilgungen_pro_kredit[i])
-        sondertilgungen_sum     = add_list(sondertilgungen_sum, sondertilgungen_pro_kredit[i])
-        monatliche_rate_sum     = add_list(tilgungen_sum, zinsen_sum)
-        kredite_sum             = add_list(kredite_sum, kredite_pro_kredit[i])
+        kredite_kumuliert['Zinsen']          = add_list(kredite_kumuliert['Zinsen'], kredite_jahresverlauf['Zinsen Array'][i])
+        kredite_kumuliert['Restschulden']    = add_list(kredite_kumuliert['Restschulden'], kredite_jahresverlauf['Restschulden Array'][i])
+        kredite_kumuliert['Tilgungen']       = add_list(kredite_kumuliert['Tilgungen'], kredite_jahresverlauf['Tilgungen Array'][i])
+        kredite_kumuliert['Sondertilgungen'] = add_list(kredite_kumuliert['Sondertilgungen'], kredite_jahresverlauf['Sondertilgungen Array'][i])
+        kredite_kumuliert['Monatliche Rate'] = add_list(kredite_kumuliert['Tilgungen'], kredite_kumuliert['Zinsen'])
+        kredite_kumuliert['Kredite']         = add_list(kredite_kumuliert['Kredite'], kredite_jahresverlauf['Kredite Array'][i])
 
 
     # Berechnung und Ausgabe der insgesamt für den Kredit gezahlten Summe + Relation zur Kreditsumme
-    sondertilgungen_summe = sum(sondertilgungen_sum)
-    rueckzahlung_vollstaendig = sum(zinsen_sum) + sum(tilgungen_sum) + sum(sondertilgungen_sum)
-    kredit_vollstaendig = sum(kredite_sum)
+    sondertilgungen_vollstaendig = sum(kredite_kumuliert['Sondertilgungen'])
+    rueckzahlung_vollstaendig = sum(kredite_kumuliert['Zinsen']) + sum(kredite_kumuliert['Tilgungen']) + sum(kredite_kumuliert['Sondertilgungen'])
+    kredit_vollstaendig = sum(kredite_kumuliert['Kredite'])
     print()
     print("     Kredit:", kredit_vollstaendig, "€")
     print("Rückzahlung:", round(rueckzahlung_vollstaendig), "€")
@@ -171,24 +175,24 @@ if __name__ == '__main__':
 
 
     # Plot
-    kredit_anzahl = len(kredite_konditionen)
+    kredit_anzahl = len(kreditgeber_konditionen)
     fig, axs = plt.subplots(nrows=2, ncols=1+kredit_anzahl, figsize=(4+4*kredit_anzahl,7), layout="constrained")
     fig.supxlabel("Jahre")
     fig.supylabel("Tausend Euro")
 
     ax = axs[0][0]
     ax.set_title("Kredite Kumuliert", weight="bold")
-    ax.plot(jahre_sum,np.array(restschulden_sum)/1000, "-*", label='Restschulden')
+    ax.plot(kredite_kumuliert['Jahre'],np.array(kredite_kumuliert['Restschulden'])/1000, "-*", label='Restschulden')
     ax.legend()
     #ax.set_xlabel("Jahre")
     #ax.set_ylabel("Tausend Euro")
     ax.grid(True)
 
     ax = axs[1][0]
-    ax.plot(jahre_sum,np.array(tilgungen_sum)/1000, "-*", label='Tilgung')
-    ax.plot(jahre_sum,np.array(zinsen_sum)/1000, "-*", label='Zinsen')
-    ax.plot(jahre_sum, np.array(monatliche_rate_sum)/1000, "-*", label='Monatliche Rate')
-    ax.plot(jahre_sum, np.array(sondertilgungen_sum) / 1000, "*", label='Sondertilgungen')
+    ax.plot(kredite_kumuliert['Jahre'],np.array(kredite_kumuliert['Tilgungen'])/1000, "-*", label='Tilgung')
+    ax.plot(kredite_kumuliert['Jahre'],np.array(kredite_kumuliert['Zinsen'])/1000, "-*", label='Zinsen')
+    ax.plot(kredite_kumuliert['Jahre'], np.array(kredite_kumuliert['Monatliche Rate'])/1000, "-*", label='Monatliche Rate')
+    ax.plot(kredite_kumuliert['Jahre'], np.array(kredite_kumuliert['Sondertilgungen']) / 1000, "*", label='Sondertilgungen')
     ax.legend()
     #ax.set_xlabel("Jahre")
     #ax.set_ylabel("Tausend Euro")
@@ -196,18 +200,18 @@ if __name__ == '__main__':
 
     for i, ax in enumerate(axs[0][1:]):
         #plt.subplot(int(plot_amount),2,i*2+1)
-        ax.set_title((list(kredite_konditionen.keys()))[i], weight='bold')
-        ax.plot(jahre_pro_kredit[i], np.array(restschulden_pro_kredit[i]) / 1000, "-*", label='Restschulden')
+        ax.set_title((list(kreditgeber_konditionen.keys()))[i], weight='bold')
+        ax.plot(kredite_jahresverlauf['Jahres Array'][i], np.array(kredite_jahresverlauf['Restschulden Array'][i]) / 1000, "-*", label='Restschulden')
         ax.legend()
         #ax.xlabel("Jahre")
         #ax.set_ylabel("Tausend Euro")
         ax.grid(True)
 
     for i, ax in enumerate(axs[1][1:]):
-        ax.plot(jahre_pro_kredit[i], np.array(tilgungen_pro_kredit[i]) / 1000, "-*", label='Tilgung')
-        ax.plot(jahre_pro_kredit[i], np.array(zinsen_pro_kredit[i]) / 1000, "-*", label='Zinsen')
-        ax.plot(jahre_pro_kredit[i], np.array(add_list(tilgungen_pro_kredit[i], zinsen_pro_kredit[i])) / 1000, "-*", label='Monatliche Rate')
-        ax.plot(jahre_pro_kredit[i], np.array(sondertilgungen_pro_kredit[i]) / 1000, "*", label='Sondertilgungen')
+        ax.plot(kredite_jahresverlauf['Jahres Array'][i], np.array(kredite_jahresverlauf['Tilgungen Array'][i]) / 1000, "-*", label='Tilgung')
+        ax.plot(kredite_jahresverlauf['Jahres Array'][i], np.array(kredite_jahresverlauf['Zinsen Array'][i]) / 1000, "-*", label='Zinsen')
+        ax.plot(kredite_jahresverlauf['Jahres Array'][i], np.array(add_list(kredite_jahresverlauf['Tilgungen Array'][i], kredite_jahresverlauf['Zinsen Array'][i])) / 1000, "-*", label='Monatliche Rate')
+        ax.plot(kredite_jahresverlauf['Jahres Array'][i], np.array(kredite_jahresverlauf['Sondertilgungen Array'][i]) / 1000, "*", label='Sondertilgungen')
         ax.legend()
         #ax.set_xlabel("Jahre")
         #ax.set_ylabel("Tausend Euro")
