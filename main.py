@@ -148,7 +148,7 @@ if __name__ == '__main__':
         kredite_kumuliert['Restschulden']    = add_list(kredite_kumuliert['Restschulden'], kredite_output[i]['Restschulden'])
         kredite_kumuliert['Tilgungen']       = add_list(kredite_kumuliert['Tilgungen'], kredite_output[i]['Tilgungen'])
         kredite_kumuliert['Sondertilgungen'] = add_list(kredite_kumuliert['Sondertilgungen'], kredite_output[i]['Sondertilgungen'])
-        kredite_kumuliert['Monatliche Rate'] = add_list(kredite_kumuliert['Tilgungen'], kredite_output[i]['Zinsen'])
+        kredite_kumuliert['Monatliche Rate'] = add_list(kredite_kumuliert['Tilgungen'], kredite_kumuliert['Zinsen'])
         kredite_kumuliert['Kredite']         = add_list(kredite_kumuliert['Kredite'], kredite_output[i]['Kredite'])
 
 
