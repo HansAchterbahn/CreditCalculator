@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from itertools import zip_longest
+import pandas as pd
+from tabulate import tabulate
 
 def add_list(a_list:list, b_list:list):
     return [a + b for a, b in zip_longest(a_list, b_list, fillvalue=0)]
@@ -213,5 +215,19 @@ if __name__ == '__main__':
 
     plt.show()
 
+
+    # Erstellen der Kreditverlauf-Tabelle
+    tabellen_laenge = len(kredite_kumuliert['Jahre'])
+
+    df_restschulden = pd.DataFrame()
+    df_restschulden['Jahre'] = kredite_kumuliert['Jahre']
+    df_restschulden['Kredite Kumuliert'] = kredite_kumuliert['Restschulden']
+    for kreditgeber, kredit in kredite_out.items():
+        col = kredit['Restschulden'] + [0] * (tabellen_laenge - len(kredit['Restschulden']))    # Liste mit Nullen auf Tabellenlänge auffüllen
+        df_restschulden[kreditgeber] = col
+
+    print()
+    print(df_restschulden)
+    print(tabulate(df_restschulden, headers='keys', tablefmt='simple_grid', ))
 
 
