@@ -24,7 +24,7 @@ if __name__ == '__main__':
     # Kreditsummen
     hauskredit_kfw = 100000
     hauskredit_bank = sum(initiale_kosten.values()) - hauskredit_kfw
-    kaufnebenkosten = 35000
+    kaufnebenkosten = 37500
 
     # Kreditgeber und deren Konditionen mit allen Änderungen über die Jahre
     kreditgeber_konditionen = {
@@ -135,11 +135,11 @@ if __name__ == '__main__':
     # Dict in dem alle Kredite summiert werden
     kredite_kumuliert = dict({
         'Jahre':            [],
+        'Restschulden': [],
         'Zinsen':           [],
-        'Restschulden':     [],
         'Tilgungen':        [],
+        'Monatliche Rate': [],
         'Sondertilgungen':  [],
-        'Monatliche Rate':  [],
         'Kredite':          [],
     })
 
@@ -147,11 +147,11 @@ if __name__ == '__main__':
         if len(kredite_kumuliert['Jahre']) < len(kredit['Jahre']):
             kredite_kumuliert['Jahre'] = kredit['Jahre']
 
-        kredite_kumuliert['Zinsen']          = add_list(kredite_kumuliert['Zinsen'], kredit['Zinsen'])
         kredite_kumuliert['Restschulden']    = add_list(kredite_kumuliert['Restschulden'], kredit['Restschulden'])
+        kredite_kumuliert['Zinsen']          = add_list(kredite_kumuliert['Zinsen'], kredit['Zinsen'])
         kredite_kumuliert['Tilgungen']       = add_list(kredite_kumuliert['Tilgungen'], kredit['Tilgungen'])
-        kredite_kumuliert['Sondertilgungen'] = add_list(kredite_kumuliert['Sondertilgungen'], kredit['Sondertilgungen'])
         kredite_kumuliert['Monatliche Rate'] = add_list(kredite_kumuliert['Tilgungen'], kredite_kumuliert['Zinsen'])
+        kredite_kumuliert['Sondertilgungen'] = add_list(kredite_kumuliert['Sondertilgungen'], kredit['Sondertilgungen'])
         kredite_kumuliert['Kredite']         = add_list(kredite_kumuliert['Kredite'], kredit['Kredite'])
 
 
@@ -216,18 +216,16 @@ if __name__ == '__main__':
     plt.show()
 
 
+
     # Erstellen der Kreditverlauf-Tabelle
-    tabellen_laenge = len(kredite_kumuliert['Jahre'])
-
-    df_restschulden = pd.DataFrame()
-    df_restschulden['Jahre'] = kredite_kumuliert['Jahre']
-    df_restschulden['Kredite Kumuliert'] = kredite_kumuliert['Restschulden']
-    for kreditgeber, kredit in kredite_out.items():
-        col = kredit['Restschulden'] + [0] * (tabellen_laenge - len(kredit['Restschulden']))    # Liste mit Nullen auf Tabellenlänge auffüllen
-        df_restschulden[kreditgeber] = col
-
     print()
-    print(df_restschulden)
-    print(tabulate(df_restschulden, headers='keys', tablefmt='simple_grid', ))
+    print('Kredite Kumuliert')
+    print(tabulate(kredite_kumuliert, headers='keys', tablefmt='mixed_outline'))
+    df = pd.DataFrame(kredite_kumuliert).to_excel('export/kredite_kumuliert.xlsx') # to_csv('export/kredite_kumuliert.csv')
+    for kreditgeber, kredit in kredite_out.items():
+        print()
+        print(kreditgeber)
+        print(tabulate(kredit, headers='keys', tablefmt='mixed_outline'))
+        df = pd.DataFrame(kredit).to_excel('export/'+kreditgeber+'.xlsx')
 
 
