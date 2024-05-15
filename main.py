@@ -64,10 +64,9 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
     kredite_out = dict()
 
     # Durchlauf der einzelnen Kredite mit ihren jeweiligen Konditionen pro Jahr
+    print('Berechne:')
     for kreditgeber, konditionen in kreditgeber_konditionen.items():
-        print()
-        print(kreditgeber)
-        print("-"*len(kreditgeber))
+        print('-', kreditgeber)
 
         # Init der Variablen
         jahr = 0
@@ -109,9 +108,6 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
             restschuld      = restschuld + jahres_zinsen
             kredit_out['Restschulden'].append(restschuld)         # Restschuld in Euro über die Laufzeit in Jahren
 
-            # Ausgabe von Jahr und Restschuld
-            #print("Jahr", jahr, "Restschuld:", round(restschuld))
-
             # Sondertilgung von der Restschuld abziehen
             restschuld -= sondertilgung
 
@@ -119,7 +115,6 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
             raten_monatlich = []
             for i in range(12):
                 restschuld = restschuld - rate_monatlich
-                #print("  -", restschuld)
                 # Wenn die Restschuld kleiner als Null ist, wird die letzte Rate und der letzte Monat berechnet
                 if restschuld <= 0:
                     monatliche_rate_letzte = rate_monatlich + restschuld
@@ -166,7 +161,6 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
     for kredit in kredite_out.values():
         # Aufsummieren der einzelnen Elemente jedes Kredits (Jahre ausgenommen)
         for key in list(kredit.keys())[1:]:
-            print(key)
             kredite_kumuliert[key] = add_list(kredite_kumuliert[key], kredit[key])
 
         # Die Jahre werden nicht summiert, sondern der längste Datensatz wird übernommen
@@ -241,7 +235,7 @@ def erstelle_kredit_plot(kredite_out):
 if __name__ == '__main__':
     konditionen = eingangswerte()
     output = berrechnung_der_kredite(konditionen)
-    
+
     erstelle_kredit_zusammenfassung(output)
     erstelle_kredit_tabellen(output)
     erstelle_kredit_plot(output)
