@@ -8,8 +8,12 @@ def add_list(a_list:list, b_list:list):
     return [a + b for a, b in zip_longest(a_list, b_list, fillvalue=0)]
 
 if __name__ == '__main__':
+    ####################################################################################################################
     # Eingangsgrößen
-    initiale_kosten = {
+    ####################################################################################################################
+
+    # Initile Kostenaufstellung
+    einzel_kosten = {
         'Haus+Grund Kaufpreis':             350000,  # Fix
         'Acker Kaufpreis':                   25000,  # Fix
         'Wiese 1+2 Kaufpreis':                   0,  # Fix
@@ -20,11 +24,12 @@ if __name__ == '__main__':
 #        'Saal Ausbau EG':                   100000,  # geschätzt
 #        'Saal Ausbau 1.OG':                 100000,  # geschätzt
     }
+    gesamt_kosten = sum(einzel_kosten.values())
 
-    # Kreditsummen
-    hauskredit_kfw = 100000
-    hauskredit_bank = sum(initiale_kosten.values()) - hauskredit_kfw
-    kaufnebenkosten = 37500
+    # Kreditsummen, die sich aus den Initialen Kosten ergeben
+    kfw_124 = 100000            # es gibt 100.000 € für den Erwerb von Eigenheimen mit 3.71% Zinsen von der KfW (124)
+    hauskredit_bank = gesamt_kosten - kfw_124   # Von den initialen Kosten wird KfW Kredit abgezogen
+    kaufnebenkosten = gesamt_kosten * 0.1     # die Kaufnebenkosten betragen in der Regel 10% den Kaufpreises
 
     # Kreditgeber und deren Konditionen mit allen Änderungen über die Jahre
     kreditgeber_konditionen = {
@@ -35,13 +40,17 @@ if __name__ == '__main__':
         },
         'KfW 124 (Haus)': {
             # KfW Kredit 124 - Eigentumserwerb
-            0: {'zinssatz': 0.0371, 'monatliche_rate': 500, 'sondertilgung': 0, 'kredit': hauskredit_kfw},
+            0: {'zinssatz': 0.0371, 'monatliche_rate': 500, 'sondertilgung': 0, 'kredit': kfw_124},
         },
         'Kauf-Nk. (Haus)': {
             # Kaufnebenkosten - Privatkredit
             0: {'zinssatz': 0.03, 'monatliche_rate': 1200, 'sondertilgung': 0, 'kredit': kaufnebenkosten},
         }
     }
+
+    ####################################################################################################################
+    # Berechnung der Kredite über die Jahre und summierung der Kredite
+    ####################################################################################################################
 
     # Leeres Dict für Kredit Ausgangsdaten im Jahresverlauf
     kredite_out = dict()
@@ -159,10 +168,16 @@ if __name__ == '__main__':
     # Summierter Kredit wird zum Kedite Output Dict hinzugefügt → einfachere Verarbeitung in der Ausgabe (Table + Plot)
     kredite_out["Kredite Kumuliert"] = kredite_kumuliert
 
+    ####################################################################################################################
     # Berechnung und Ausgabe der insgesamt für den Kredit gezahlten Summe + Relation zur Kreditsumme
-    sondertilgungen_vollstaendig = sum(kredite_kumuliert['Sondertilgungen'])
-    rueckzahlung_vollstaendig = sum(kredite_kumuliert['Zinsen']) + sum(kredite_kumuliert['Tilgungen']) + sum(kredite_kumuliert['Sondertilgungen'])
-    kredit_vollstaendig = sum(kredite_kumuliert['Kredite'])
+    ####################################################################################################################
+    rueckzahlung_vollstaendig = (
+        sum(kredite_out['Kredite Kumuliert']['Zinsen']) +
+        sum(kredite_out['Kredite Kumuliert']['Tilgungen']) +
+        sum(kredite_out['Kredite Kumuliert']['Sondertilgungen'])
+        )
+    kredit_vollstaendig = sum(kredite_out['Kredite Kumuliert']['Kredite'])
+
     print()
     print("     Kredit:", kredit_vollstaendig, "€")
     print("Rückzahlung:", round(rueckzahlung_vollstaendig), "€")
@@ -170,18 +185,18 @@ if __name__ == '__main__':
     print()
     print("Rück.  Rel.:", round(rueckzahlung_vollstaendig / kredit_vollstaendig * 100), "%")
 
+    ####################################################################################################################
     # Erstellen der Kreditverlauf-Tabelle
-    print()
-    print('Kredite Kumuliert')
-    print(tabulate(kredite_kumuliert, headers='keys', tablefmt='mixed_outline'))
-    df = pd.DataFrame(kredite_kumuliert).to_excel('export/kredite_kumuliert.xlsx') # to_csv('export/kredite_kumuliert.csv')
+    ####################################################################################################################
     for kreditgeber, kredit in kredite_out.items():
         print()
         print(kreditgeber)
         print(tabulate(kredit, headers='keys', tablefmt='mixed_outline'))
         df = pd.DataFrame(kredit).to_excel('export/'+kreditgeber+'.xlsx')
 
+    ####################################################################################################################
     # Plot der Ergebnisse
+    ####################################################################################################################
     kredit_anzahl = len(kredite_out)
     fig, axs = plt.subplots(nrows=2, ncols=kredit_anzahl, figsize=(4*kredit_anzahl,7), layout="constrained")
     fig.supxlabel("Jahre")
