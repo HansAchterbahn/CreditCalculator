@@ -31,6 +31,7 @@ if __name__ == '__main__':
         'Bank (Haus+Sanierung)': {
             # Hauptkredit Sparkasse / VR-Bank / etc.
             0: {'zinssatz': 0.04, 'monatliche_rate': 1700, 'sondertilgung': 0, 'kredit': hauskredit_bank},
+            3: {'zinssatz': 0.04, 'monatliche_rate': 1700, 'sondertilgung': 12000, 'kredit': 0},
         },
         'KfW 124 (Haus)': {
             # KfW Kredit 124 - Eigentumserwerb
@@ -71,7 +72,7 @@ if __name__ == '__main__':
         # Durchlaufe für den aktuellen Kredit die Jahre bis die Restschuld beglichen ist
         while True:
             # Einmalige Änderungen zurücksetzen
-            sondertilgung = 0
+            #sondertilgung = 0
             kredit = 0
 
             # Prüfen, ob sich für das aktuelle Jahr Änderungen ergeben haben
@@ -130,9 +131,10 @@ if __name__ == '__main__':
             # Jahr
             jahr += 1
 
+        # Fertig berechneter Kredit wir im Kredite Dict gespeichert
         kredite_out[kreditgeber] = kredit_out
 
-    # Dict in dem alle Kredite summiert werden
+    # Kredite in einem Dict summieren
     kredite_kumuliert = dict({
         'Jahre':            [],
         'Restschulden': [],
@@ -143,17 +145,19 @@ if __name__ == '__main__':
         'Kredite':          [],
     })
 
+    # Durchlaufen der Kredite → jeder Kredit wird einzeln aufsummiert
     for kredit in kredite_out.values():
+        # Aufsummieren der einzelnen Elemente jedes Kredits (Jahre ausgenommen)
+        for key in list(kredit.keys())[1:]:
+            print(key)
+            kredite_kumuliert[key] = add_list(kredite_kumuliert[key], kredit[key])
+
+        # Die Jahre werden nicht summiert, sondern der längste Datensatz wird übernommen
         if len(kredite_kumuliert['Jahre']) < len(kredit['Jahre']):
             kredite_kumuliert['Jahre'] = kredit['Jahre']
 
-        kredite_kumuliert['Restschulden']    = add_list(kredite_kumuliert['Restschulden'], kredit['Restschulden'])
-        kredite_kumuliert['Zinsen']          = add_list(kredite_kumuliert['Zinsen'], kredit['Zinsen'])
-        kredite_kumuliert['Tilgungen']       = add_list(kredite_kumuliert['Tilgungen'], kredit['Tilgungen'])
-        kredite_kumuliert['Monatliche Rate'] = add_list(kredite_kumuliert['Tilgungen'], kredite_kumuliert['Zinsen'])
-        kredite_kumuliert['Sondertilgungen'] = add_list(kredite_kumuliert['Sondertilgungen'], kredit['Sondertilgungen'])
-        kredite_kumuliert['Kredite']         = add_list(kredite_kumuliert['Kredite'], kredit['Kredite'])
-
+    # Summierter Kredit wird zum Kedite Output Dict hinzugefügt → einfachere Verarbeitung in der Ausgabe (Table + Plot)
+    kredite_out["Kredite Kumuliert"] = kredite_kumuliert
 
     # Berechnung und Ausgabe der insgesamt für den Kredit gezahlten Summe + Relation zur Kreditsumme
     sondertilgungen_vollstaendig = sum(kredite_kumuliert['Sondertilgungen'])
@@ -166,57 +170,6 @@ if __name__ == '__main__':
     print()
     print("Rück.  Rel.:", round(rueckzahlung_vollstaendig / kredit_vollstaendig * 100), "%")
 
-
-    # Plot der Ergebnisse
-    kredit_anzahl = len(kreditgeber_konditionen)
-    fig, axs = plt.subplots(nrows=2, ncols=1+kredit_anzahl, figsize=(4+4*kredit_anzahl,7), layout="constrained")
-    fig.supxlabel("Jahre")
-    fig.supylabel("Tausend Euro")
-
-    # Plot - Kredite kumuliert - Restschulden
-    ax = axs[0][0]
-    ax.set_title("Kredite kumuliert", weight="bold")
-    ax.plot(kredite_kumuliert['Jahre'],np.array(kredite_kumuliert['Restschulden'])/1000, "-*", label='Restschulden')
-    ax.legend()
-    #ax.set_xlabel("Jahre")
-    #ax.set_ylabel("Tausend Euro")
-    ax.grid(True)
-
-    # Plot - Kredite kumuliert - Tilgung, Zinsen, monatliche Rate, Sondertilgungen
-    ax = axs[1][0]
-    ax.plot(kredite_kumuliert['Jahre'],np.array(kredite_kumuliert['Tilgungen'])/1000, "-*", label='Tilgung')
-    ax.plot(kredite_kumuliert['Jahre'],np.array(kredite_kumuliert['Zinsen'])/1000, "-*", label='Zinsen')
-    ax.plot(kredite_kumuliert['Jahre'], np.array(kredite_kumuliert['Monatliche Rate'])/1000, "-*", label='Monatliche Rate')
-    ax.plot(kredite_kumuliert['Jahre'], np.array(kredite_kumuliert['Sondertilgungen']) / 1000, "*", label='Sondertilgungen')
-    ax.legend()
-    #ax.set_xlabel("Jahre")
-    #ax.set_ylabel("Tausend Euro")
-    ax.grid(True)
-
-
-    for i, kredit in enumerate(kredite_out.values()):
-        ax = axs[0][1+i]
-        ax.set_title((list(kreditgeber_konditionen.keys()))[i], weight='bold')
-        ax.plot(kredit['Jahre'], np.array(kredit['Restschulden']) / 1000, "-*", label='Restschulden')
-        ax.legend()
-        #ax.xlabel("Jahre")
-        #ax.set_ylabel("Tausend Euro")
-        ax.grid(True)
-
-        ax = axs[1][1+i]
-        ax.plot(kredit['Jahre'], np.array(kredit['Tilgungen']) / 1000, "-*", label='Tilgung')
-        ax.plot(kredit['Jahre'], np.array(kredit['Zinsen']) / 1000, "-*", label='Zinsen')
-        ax.plot(kredit['Jahre'], np.array(kredit['Monatliche Rate']) / 1000, "-*", label='Monatliche Rate')
-        ax.plot(kredit['Jahre'], np.array(kredit['Sondertilgungen']) / 1000, "*", label='Sondertilgungen')
-        ax.legend()
-        #ax.set_xlabel("Jahre")
-        #ax.set_ylabel("Tausend Euro")
-        ax.grid(True)
-
-    plt.show()
-
-
-
     # Erstellen der Kreditverlauf-Tabelle
     print()
     print('Kredite Kumuliert')
@@ -227,5 +180,37 @@ if __name__ == '__main__':
         print(kreditgeber)
         print(tabulate(kredit, headers='keys', tablefmt='mixed_outline'))
         df = pd.DataFrame(kredit).to_excel('export/'+kreditgeber+'.xlsx')
+
+    # Plot der Ergebnisse
+    kredit_anzahl = len(kredite_out)
+    fig, axs = plt.subplots(nrows=2, ncols=kredit_anzahl, figsize=(4*kredit_anzahl,7), layout="constrained")
+    fig.supxlabel("Jahre")
+    fig.supylabel("Tausend Euro")
+
+    for i, (kreditgeber, kredit)in enumerate(kredite_out.items()):
+        ax = axs[0][i]
+        ax.set_title(kreditgeber, weight='bold')
+        ax.plot(kredit['Jahre'], np.array(kredit['Restschulden']) / 1000, "-*", label='Restschulden')
+        ax.legend()
+        #ax.xlabel("Jahre")
+        #ax.set_ylabel("Tausend Euro")
+        ax.grid(True)
+
+        ax = axs[1][i]
+        ax.plot(kredit['Jahre'], np.array(kredit['Tilgungen']) / 1000, "-*", label='Tilgung')
+        ax.plot(kredit['Jahre'], np.array(kredit['Zinsen']) / 1000, "-*", label='Zinsen')
+        ax.plot(kredit['Jahre'], np.array(kredit['Monatliche Rate']) / 1000, "-*", label='Monatliche Rate')
+        ax.plot(kredit['Jahre'], np.array(kredit['Sondertilgungen']) / 1000, "*", label='Sondertilgungen')
+        ax.legend()
+        #ax.set_xlabel("Jahre")
+        #ax.set_ylabel("Tausend Euro")
+        ax.grid(True)
+
+    plt.savefig('export/Kredit_Kennlinien.jpg')
+    plt.show()
+
+
+
+
 
 
