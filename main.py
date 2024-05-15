@@ -7,7 +7,7 @@ from tabulate import tabulate
 def add_list(a_list:list, b_list:list):
     return [a + b for a, b in zip_longest(a_list, b_list, fillvalue=0)]
 
-if __name__ == '__main__':
+def eingangswerte():
     ####################################################################################################################
     # Eingangsgrößen
     ####################################################################################################################
@@ -53,6 +53,9 @@ if __name__ == '__main__':
         }
     }
 
+    return kreditgeber_konditionen
+
+def berrechnung_der_kredite(kreditgeber_konditionen):
     ####################################################################################################################
     # Berechnung der Kredite über die Jahre und summierung der Kredite
     ####################################################################################################################
@@ -173,6 +176,9 @@ if __name__ == '__main__':
     # Summierter Kredit wird zum Kedite Output Dict hinzugefügt → einfachere Verarbeitung in der Ausgabe (Table + Plot)
     kredite_out["Kredite Kumuliert"] = kredite_kumuliert
 
+    return kredite_out
+
+def erstelle_kredit_zusammenfassung(kredite_out):
     ####################################################################################################################
     # Berechnung und Ausgabe der insgesamt für den Kredit gezahlten Summe + Relation zur Kreditsumme
     ####################################################################################################################
@@ -190,6 +196,7 @@ if __name__ == '__main__':
     print()
     print("Rück.  Rel.:", round(rueckzahlung_vollstaendig / augenommene_summe * 100), "%")
 
+def erstelle_kredit_tabellen(kredite_out):
     ####################################################################################################################
     # Erstellen der Kreditverlauf-Tabelle
     ####################################################################################################################
@@ -199,6 +206,7 @@ if __name__ == '__main__':
         print(tabulate(kredit, headers='keys', tablefmt='mixed_outline'))
         df = pd.DataFrame(kredit).to_excel('export/' + kreditgeber + '.xlsx')
 
+def erstelle_kredit_plot(kredite_out):
     ####################################################################################################################
     # Plot der Ergebnisse
     ####################################################################################################################
@@ -230,6 +238,13 @@ if __name__ == '__main__':
     plt.savefig('export/Kredit_Kennlinien.jpg')
     plt.show()
 
+if __name__ == '__main__':
+    konditionen = eingangswerte()
+    output = berrechnung_der_kredite(konditionen)
+    
+    erstelle_kredit_zusammenfassung(output)
+    erstelle_kredit_tabellen(output)
+    erstelle_kredit_plot(output)
 
 
 
