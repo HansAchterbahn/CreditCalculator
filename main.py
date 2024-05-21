@@ -46,9 +46,7 @@ def eingangswerte():
     return kreditgeberkonditionen
 
 def berrechnung_der_kredite(kreditgeber_konditionen):
-    ####################################################################################################################
     # Berechnung der Kredite über die Jahre und summierung der Kredite
-    ####################################################################################################################
 
     # Leeres Dict für Kredit Ausgangsdaten im Jahresverlauf
     kredite_out = dict()
@@ -163,9 +161,7 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
     return kredite_out
 
 def erstelle_kredit_zusammenfassung(kredite_out):
-    ####################################################################################################################
     # Berechnung und Ausgabe der insgesamt für den Kredit gezahlten Summe + Relation zur Kreditsumme
-    ####################################################################################################################
     rueckzahlung_vollstaendig = (
         sum(kredite_out['Kredite Kumuliert']['Zinsen']) +
         sum(kredite_out['Kredite Kumuliert']['Tilgungen']) +
@@ -181,41 +177,50 @@ def erstelle_kredit_zusammenfassung(kredite_out):
     print("Rück.  Rel.:", round(rueckzahlung_vollstaendig / augenommene_summe * 100), "%")
 
 def erstelle_kredit_tabellen(kredite_out):
-    ####################################################################################################################
     # Erstellen der Kreditverlauf-Tabelle
-    ####################################################################################################################
     for kreditgeber, kredit in kredite_out.items():
         print()
         print(kreditgeber)
         print(tabulate(kredit, headers='keys', tablefmt='mixed_outline'))
-        df = pd.DataFrame(kredit).to_excel('export/' + kreditgeber + '.xlsx')
+        pd.DataFrame(kredit).to_excel('export/' + kreditgeber + '.xlsx')
 
 def erstelle_kredit_plot(kredite_out):
-    ####################################################################################################################
     # Plot der Ergebnisse
-    ####################################################################################################################
     kredit_anzahl = len(kredite_out)
     fig, axs = plt.subplots(nrows=2, ncols=kredit_anzahl, figsize=(4*kredit_anzahl,7), layout="constrained")
     fig.supxlabel("Jahre")
-    fig.supylabel("Tausend Euro")
+    #fig.supylabel("Tausend Euro")
 
     for i, (kreditgeber, kredit)in enumerate(kredite_out.items()):
+        # Aktuellen Plot für Restschulden festlegen (obere Zeile)
         ax = axs[0][i]
-        ax.set_title(kreditgeber, weight='bold')
+
+        # Plot Titel erstellen (Kreditgeber, Zinsen, Monatliche Rate)
+        zins = round(kredit["Zinsen"][0]/kredit["Aufgenommene Summen"][0], 3)
+        rate = kredit["Monatliche Rate"][0]/12
+        ax.set_title(kreditgeber+"\n", weight='bold', fontsize=16)
+        ax.set_title("Zins: "+str(zins)+" %", loc = "left")
+        ax.set_title("Rate: "+str(rate)+" €", loc = "right")
+
+
+        # Restschulden plotten
         ax.plot(kredit['Jahre'], np.array(kredit['Restschulden']) / 1000, "-*", label='Restschulden')
         ax.legend()
         #ax.xlabel("Jahre")
-        #ax.set_ylabel("Tausend Euro")
+        if i == 0:
+            ax.set_ylabel("Tausend Euro")
         ax.grid(True)
 
+        # Aktuellen Plot für Tilgung, Zinsen, Rate und Sondertilgung festlegen & plotten
         ax = axs[1][i]
-        ax.plot(kredit['Jahre'], np.array(kredit['Tilgungen']) / 1000, "-*", label='Tilgung')
-        ax.plot(kredit['Jahre'], np.array(kredit['Zinsen']) / 1000, "-*", label='Zinsen')
-        ax.plot(kredit['Jahre'], np.array(kredit['Monatliche Rate']) / 1000, "-*", label='Monatliche Rate')
-        ax.plot(kredit['Jahre'], np.array(kredit['Sondertilgungen']) / 1000, "*", label='Sondertilgungen')
+        ax.plot(kredit['Jahre'], np.array(kredit['Tilgungen']) / 12, "-*", label='Tilgung')
+        ax.plot(kredit['Jahre'], np.array(kredit['Zinsen']) / 12, "-*", label='Zinsen')
+        ax.plot(kredit['Jahre'], np.array(kredit['Monatliche Rate']) / 12, "-*", label='Monatliche Rate')
+        ax.plot(kredit['Jahre'], np.array(kredit['Sondertilgungen']) / 12, "*", label='Sondertilgungen')
         ax.legend()
         #ax.set_xlabel("Jahre")
-        #ax.set_ylabel("Tausend Euro")
+        if i == 0:
+            ax.set_ylabel("Euro")
         ax.grid(True)
 
     # speichern und anzeigen des Plots
