@@ -3,27 +3,25 @@ import numpy as np
 from itertools import zip_longest
 import pandas as pd
 from tabulate import tabulate
+import yaml
+from pprint import pprint
 
 def add_list(a_list:list, b_list:list):
     return [a + b for a, b in zip_longest(a_list, b_list, fillvalue=0)]
 
 def eingangswerte():
-    ####################################################################################################################
-    # Eingangsgrößen
-    ####################################################################################################################
+    # YAML Datei mit Kreditdaten lesen
+    with open("loan.yaml", mode="rb") as file:
+        result = yaml.safe_load(file)
+        einzel_kosten = result["Einzelkosten"]["EK01"]
+        kreditgeberkonditionen = result["Kreditgeberkonditionen"]["KG01"]
 
-    # Initile Kostenaufstellung
-    einzel_kosten = {
-        'Haus+Grund Kaufpreis':             350000,  # Fix
-        'Acker Kaufpreis':                   25000,  # Fix
-        'Wiese 1+2 Kaufpreis':                   0,  # Fix
-        'Haupthaus Dämmung Fassade':         50000,  # geschätzt
-        'Haupthaus Dämmung Dach':            10000,  # geschätzt - in Eigenleistung
-#        'Saal Dämmung Fassade':              50000,  # geschätzt
-#        'Saal Dämmung Dach':                 10000,
-#        'Saal Ausbau EG':                   100000,  # geschätzt
-#        'Saal Ausbau 1.OG':                 100000,  # geschätzt
-    }
+    # Ausgabe der Einzelkosten
+    print("Einzelkosten")
+    pprint(einzel_kosten)
+    print()
+
+    # Ermitteln der relevanten Kosten für die einzelnen Kredite
     gesamt_kosten = sum(einzel_kosten.values())
     grundstuecks_kosten = (
         einzel_kosten['Haus+Grund Kaufpreis'] +
@@ -32,28 +30,20 @@ def eingangswerte():
     )
 
     # Kreditsummen, die sich aus den Initialen Kosten ergeben
-    kfw_124 = 100000            # es gibt 100.000 € für den Erwerb von Eigenheimen mit 3.71% Zinsen von der KfW (124)
+    kfw_124 = 100e3            # es gibt 100.000 € für den Erwerb von Eigenheimen mit 3.71% Zinsen von der KfW (124)
     hauskredit_bank = gesamt_kosten - kfw_124   # Von den initialen Kosten wird KfW Kredit abgezogen
     kaufnebenkosten = grundstuecks_kosten * 0.1     # die Kaufnebenkosten betragen in der Regel 10% den Kaufpreises
 
-    # Kreditgeber und deren Konditionen mit allen Änderungen über die Jahre
-    kreditgeber_konditionen = {
-        'Bank (Haus+Sanierung)': {
-            # Hauptkredit Sparkasse / VR-Bank / etc.
-            0: {'Zinssatz': 0.04, 'Monatliche Rate': 1700, 'Sondertilgung': 0, 'Aufgenommene Summe': hauskredit_bank},
-            3: {'Zinssatz': 0.04, 'Monatliche Rate': 1700, 'Sondertilgung': 12000, 'Aufgenommene Summe': 0},
-        },
-        'KfW 124 (Haus)': {
-            # KfW Kredit 124 - Eigentumserwerb
-            0: {'Zinssatz': 0.0371, 'Monatliche Rate': 500, 'Sondertilgung': 0, 'Aufgenommene Summe': kfw_124},
-        },
-        'Kauf-Nk. (Haus)': {
-            # Kaufnebenkosten - Privatkredit
-            0: {'Zinssatz': 0.03, 'Monatliche Rate': 1200, 'Sondertilgung': 0, 'Aufgenommene Summe': kaufnebenkosten},
-        }
-    }
+    # Schreibe die Kreditsummen ins Dict
+    kreditgeberkonditionen["Bank (Haus+Sanierung)"][0]["Aufgenommene Summe"] = hauskredit_bank
+    kreditgeberkonditionen["KfW 124 (Haus)"][0]["Aufgenommene Summe"] = kfw_124
+    kreditgeberkonditionen["Kauf-Nk. (Haus)"][0]["Aufgenommene Summe"] = kaufnebenkosten
 
-    return kreditgeber_konditionen
+    print("Kreditgeberkonditionen")
+    pprint(kreditgeberkonditionen)
+    print()
+
+    return kreditgeberkonditionen
 
 def berrechnung_der_kredite(kreditgeber_konditionen):
     ####################################################################################################################
