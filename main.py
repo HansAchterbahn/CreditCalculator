@@ -101,28 +101,29 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
             restschuld      = restschuld + jahres_zinsen
             kredit_out['Restschulden'].append(restschuld)         # Restschuld in Euro über die Laufzeit in Jahren
 
-            # Sondertilgung von der Restschuld abziehen
-            restschuld -= kondition['Sondertilgung']
-            if restschuld <= 0:
-                kondition['Sondertilgung'] = kondition['Sondertilgung'] + restschuld
-                rate_jahr = 0
-                tilgung = 0
-            else:
-                # Monatsweise Abrechnung der Rate, um den letzten Monat exakt bestimmen zu können
-                raten_monatlich = []
-                for i in range(12):
-                    restschuld = restschuld - kondition['Monatliche Rate']
-                    # Wenn die Restschuld kleiner als Null ist, wird die letzte Rate und der letzte Monat berechnet
-                    if restschuld <= 0:
-                        monatliche_rate_letzte = kondition['Monatliche Rate'] + restschuld
-                        restschuld = 0
-                        raten_monatlich.append(monatliche_rate_letzte)
-                        break
-                    raten_monatlich.append(kondition['Monatliche Rate'])
+            # Monatsweise Abrechnung der Rate, um den letzten Monat exakt bestimmen zu können
+            raten_monatlich = []
+            for i in range(12):
+                restschuld = restschuld - kondition['Monatliche Rate']
+                # Wenn die Restschuld kleiner als Null ist, wird die letzte Rate und der letzte Monat berechnet
+                if restschuld <= 0:
+                    monatliche_rate_letzte = kondition['Monatliche Rate'] + restschuld
+                    restschuld = 0
+                    raten_monatlich.append(monatliche_rate_letzte)
+                    break
+                raten_monatlich.append(kondition['Monatliche Rate'])
 
-                # Berechnung der Restschuld und Jahreszahl erhöhen
-                rate_jahr     = sum(raten_monatlich)
-                tilgung         = rate_jahr - jahres_zinsen
+            # Sondertilgung von der Restschuld abziehen
+            if restschuld > 0:
+                restschuld -= kondition['Sondertilgung']
+                if restschuld <= 0:
+                    kondition['Sondertilgung'] = kondition['Sondertilgung'] + restschuld
+            else:
+                kondition['Sondertilgung'] = 0
+
+            # Berechnung der Restschuld und Jahreszahl erhöhen
+            rate_jahr     = sum(raten_monatlich)
+            tilgung         = rate_jahr - jahres_zinsen
 
             # Daten für Graphen aufnehmen
             kredit_out['Jahre'].append(jahr)                      # aktuelles Laufzeitjahr
