@@ -7,14 +7,15 @@ import yaml
 from pprint import pprint
 
 def add_list(a_list:list, b_list:list):
+    # method to add two lists together and return the result
     return [a + b for a, b in zip_longest(a_list, b_list, fillvalue=0)]
 
-def eingangswerte():
+def eingangswerte(kredit_paket:str):
     # YAML Datei mit Kreditdaten lesen
     with open("loan.yaml", mode="rb") as file:
         result = yaml.safe_load(file)
         einzel_kosten = result["Einzelkosten"]["EK01"]
-        kreditgeberkonditionen = result["Kreditgeberkonditionen"]["KG01"]
+        kreditgeberkonditionen = result["Kreditgeberkonditionen"][kredit_paket]
 
     # Ausgabe der Einzelkosten
     print("Einzelkosten")
@@ -29,15 +30,15 @@ def eingangswerte():
         einzel_kosten['Acker Kaufpreis']
     )
 
-    # Kreditsummen, die sich aus den Initialen Kosten ergeben
-    kfw_124 = 100e3            # es gibt 100.000 € für den Erwerb von Eigenheimen mit 3.71% Zinsen von der KfW (124)
-    hauskredit_bank = gesamt_kosten - kfw_124   # Von den initialen Kosten wird KfW Kredit abgezogen
-    kaufnebenkosten = grundstuecks_kosten * 0.1     # die Kaufnebenkosten betragen in der Regel 10% den Kaufpreises
-
-    # Schreibe die Kreditsummen ins Dict
-    kreditgeberkonditionen["Bank (Haus+Sanierung)"][0]["Aufgenommene Summe"] = hauskredit_bank
-    kreditgeberkonditionen["KfW 124 (Haus)"][0]["Aufgenommene Summe"] = kfw_124
-    kreditgeberkonditionen["Kauf-Nk. (Haus)"][0]["Aufgenommene Summe"] = kaufnebenkosten
+    # # Kreditsummen, die sich aus den Initialen Kosten ergeben
+    # kfw_124 = 100e3            # es gibt 100.000 € für den Erwerb von Eigenheimen mit 3.71% Zinsen von der KfW (124)
+    # hauskredit_bank = gesamt_kosten - kfw_124   # Von den initialen Kosten wird KfW Kredit abgezogen
+    # kaufnebenkosten = grundstuecks_kosten * 0.1     # die Kaufnebenkosten betragen in der Regel 10% den Kaufpreises
+    #
+    # # Schreibe die Kreditsummen ins Dict
+    # kreditgeberkonditionen["Bank (Haus+Sanierung)"][0]["Aufgenommene Summe"] = hauskredit_bank
+    # kreditgeberkonditionen["KfW 124 (Haus)"][0]["Aufgenommene Summe"] = kfw_124
+    # kreditgeberkonditionen["Kauf-Nk. (Haus)"][0]["Aufgenommene Summe"] = kaufnebenkosten
 
     print("Kreditgeberkonditionen")
     pprint(kreditgeberkonditionen)
@@ -73,53 +74,62 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
             'Aufgenommene Summen': []
         })
 
+        kondition = dict({
+            'Zinssatz': 0,
+            'Monatliche Rate': 0,
+            'Sondertilgung': 0,
+            'Aufgenommene Summe': 0
+        })
+
         # Durchlaufe für den aktuellen Kredit die Jahre bis die Restschuld beglichen ist
         while True:
             # Einmalige Änderungen zurücksetzen
-            #sondertilgung = 0
-            aufgenommene_summe = 0
+            #kondition['Sondertilgung'] = 0
+            kondition['Aufgenommene Summe'] = 0
 
             # Prüfen, ob sich für das aktuelle Jahr Änderungen ergeben haben
             if jahr in konditionen:
-                zinssatz            = konditionen[jahr]['Zinssatz']
-                rate_monatlich      = konditionen[jahr]['Monatliche Rate']
-                sondertilgung       = konditionen[jahr]['Sondertilgung']
-                aufgenommene_summe  = konditionen[jahr]['Aufgenommene Summe']
+                for k in konditionen[jahr]:
+                    kondition[k] = konditionen[jahr][k]
 
             # Neue Kreditsumme zu Restschulden addieren (Initial + Nachschuss)
-            restschuld += aufgenommene_summe
-            kredit_out['Aufgenommene Summen'].append(aufgenommene_summe)
+            restschuld += kondition['Aufgenommene Summe']
 
             # Jahreszinsen berechnen
-            jahres_zinsen   = restschuld * zinssatz
+            jahres_zinsen   = restschuld * kondition['Zinssatz']
             kredit_out['Zinsen'].append(jahres_zinsen)
             restschuld      = restschuld + jahres_zinsen
             kredit_out['Restschulden'].append(restschuld)         # Restschuld in Euro über die Laufzeit in Jahren
 
             # Sondertilgung von der Restschuld abziehen
-            restschuld -= sondertilgung
+            restschuld -= kondition['Sondertilgung']
+            if restschuld <= 0:
+                kondition['Sondertilgung'] = kondition['Sondertilgung'] + restschuld
+                rate_jahr = 0
+                tilgung = 0
+            else:
+                # Monatsweise Abrechnung der Rate, um den letzten Monat exakt bestimmen zu können
+                raten_monatlich = []
+                for i in range(12):
+                    restschuld = restschuld - kondition['Monatliche Rate']
+                    # Wenn die Restschuld kleiner als Null ist, wird die letzte Rate und der letzte Monat berechnet
+                    if restschuld <= 0:
+                        monatliche_rate_letzte = kondition['Monatliche Rate'] + restschuld
+                        restschuld = 0
+                        raten_monatlich.append(monatliche_rate_letzte)
+                        break
+                    raten_monatlich.append(kondition['Monatliche Rate'])
 
-            # Monatsweise Abrechnung der Rate, um den letzten Monat exakt bestimmen zu können
-            raten_monatlich = []
-            for i in range(12):
-                restschuld = restschuld - rate_monatlich
-                # Wenn die Restschuld kleiner als Null ist, wird die letzte Rate und der letzte Monat berechnet
-                if restschuld <= 0:
-                    monatliche_rate_letzte = rate_monatlich + restschuld
-                    restschuld = 0
-                    monat_letzter = int(i)
-                    raten_monatlich.append(monatliche_rate_letzte)
-                    break
-                raten_monatlich.append(rate_monatlich)
-            # Berechnung der Restschuld und Jahreszahl erhöhen
-            rate_jahr     = sum(raten_monatlich)
-            tilgung         = rate_jahr - jahres_zinsen
+                # Berechnung der Restschuld und Jahreszahl erhöhen
+                rate_jahr     = sum(raten_monatlich)
+                tilgung         = rate_jahr - jahres_zinsen
 
             # Daten für Graphen aufnehmen
             kredit_out['Jahre'].append(jahr)                      # aktuelles Laufzeitjahr
             kredit_out['Tilgungen'].append(tilgung)               # aktuell zu zahlende Jahrestilgung
-            kredit_out['Sondertilgungen'].append(sondertilgung)   # aktuell zu zahlende Sondertilgung
+            kredit_out['Sondertilgungen'].append(kondition['Sondertilgung'])   # aktuell zu zahlende Sondertilgung
             kredit_out['Monatliche Rate'].append(tilgung + jahres_zinsen)
+            kredit_out['Aufgenommene Summen'].append(kondition['Aufgenommene Summe'])
 
             # Falls die Laufzeit größer als 100 Jahre ist, wird die Schleife verlassen
             if jahr > 100:
@@ -197,7 +207,7 @@ def erstelle_kredit_plot(kredite_out):
 
         # Plot Titel erstellen (Kreditgeber, Zinsen, Monatliche Rate)
         zins = round(kredit["Zinsen"][0]/kredit["Aufgenommene Summen"][0], 3)
-        rate = kredit["Monatliche Rate"][0]/12
+        rate = round(kredit["Monatliche Rate"][0]/12, 2)
         ax.set_title(kreditgeber+"\n", weight='bold', fontsize=16)
         ax.set_title("Zins: "+str(zins)+" %", loc = "left")
         ax.set_title("Rate: "+str(rate)+" €", loc = "right")
@@ -228,7 +238,10 @@ def erstelle_kredit_plot(kredite_out):
     plt.show()
 
 if __name__ == '__main__':
-    konditionen = eingangswerte()
+    konditionen = eingangswerte(
+        #"01-drklein-kassler-sparkasse"
+        "03-wuestenrot-grob"
+    )
     output = berrechnung_der_kredite(konditionen)
 
     erstelle_kredit_zusammenfassung(output)
