@@ -34,17 +34,17 @@ Einzelkosten:
 # Kreditgeberkonditionen:
 #  Kreditgeberkondition-01: (beliebiger Name)
 #    Bank (Haus+Sanierung):
-#      0:
+#      1:
 #        Zinssatz:            0.00
 #        Monatliche Rate:     0
 #        Sondertilgung:       0
 #        Aufgenommene Summe:  0
 #      beliebiges Jahr als int:
-#        belibige bereits vorhandene Keys: 0
+#        beliebige bereits vorhandene Keys: 0
 Kreditgeberkonditionen:
-  01-drklein-kassler-sparkasse: # 10 Jahre bei 4.00%
+  01-drklein-kassler-sparkasse: # 10 Jahre bei 4,00 %
     Bank (Haus+Sanierung):    # Hauptkredit Sparkasse / VR-Bank / etc.
-      0:
+      1:
         Zinssatz: 0.0416
         Monatliche Rate: 1793.10
         Sondertilgung: 0
@@ -52,22 +52,22 @@ Kreditgeberkonditionen:
       3:
         Sondertilgung: 12000
     KfW 124 (Haus):           # KfW Kredit 124 - Eigentumserwerb
-      0:
+      1:
         Zinssatz: 0.0385
         Monatliche Rate: 313.33
         Sondertilgung: 0
         Aufgenommene Summe: 100000
-      1:
+      2:
         Monatliche Rate: 472.36
     Kauf-Nk. (Haus):          # Kaufnebenkosten - Privatkredit
-      0:
+      1:
         Zinssatz: 0.03
         Monatliche Rate: 1200
         Sondertilgung: 0
         Aufgenommene Summe: 37500
   02-KfW-124-komplett-ideal:
     Bank (Haus+Sanierung):    # Hauptkredit Sparkasse / VR-Bank / etc.
-      0:
+      1:
         Zinssatz: 0.0371
         Monatliche Rate: 1700
         Sondertilgung: 0
@@ -75,36 +75,171 @@ Kreditgeberkonditionen:
       3:
         Sondertilgung: 12000
     KfW 124 (Haus):           # KfW Kredit 124 - Eigentumserwerb
-      0:
+      1:
         Zinssatz: 0.0371
         Monatliche Rate: 500
         Sondertilgung: 0
         Aufgenommene Summe: 100000
     Kauf-Nk. (Haus):          # Kaufnebenkosten - Privatkredit
-      0:
+      1:
         Zinssatz: 0.03
         Monatliche Rate: 1200
         Sondertilgung: 0
         Aufgenommene Summe: 37500
   03-wuestenrot-grob:
     Bank (Haus+Sanierung):    # Hauptkredit Sparkasse / VR-Bank / etc.
-      0:
+      1:
         Zinssatz: 0.0385
         Monatliche Rate: 1500
         Sondertilgung: 0
         Aufgenommene Summe: 310000
       3:
         Monatliche Rate: 1700
-        Sondertilgung: 12000
+        #Sondertilgung: 12000
     KfW 124 (Haus):           # KfW Kredit 124 - Eigentumserwerb
-      0:
+      1:
         Zinssatz: 0.0371
         Monatliche Rate: 500
         Sondertilgung: 0
         Aufgenommene Summe: 100000
     Kauf-Nk. (Haus):          # Kaufnebenkosten - Privatkredit
-      0:
+      1:
         Zinssatz: 0.03
         Monatliche Rate: 1400
         Sondertilgung: 0
         Aufgenommene Summe: 60000
+  04-wuestenrot-grob-mit-KfW358:
+    Bank (Haus+Sanierung):    # Hauptkredit Sparkasse / VR-Bank / etc.
+      1:
+        Zinssatz: 0.0385
+        Monatliche Rate: 1500
+        Sondertilgung: 0
+        Aufgenommene Summe: 315000
+      #5:
+        #Monatliche Rate: 1700
+        #Sondertilgung: 12000
+    KfW 124 (Eigenheimerwerb):           # KfW Kredit 124 - Eigentumserwerb
+      1:
+        Zinssatz: 0.0371
+        Monatliche Rate: 500
+        Sondertilgung: 0
+        Aufgenommene Summe: 100000
+    Kauf-Nk. (Haus):          # Kaufnebenkosten - Privatkredit
+      1:
+        Zinssatz: 0.02
+        Monatliche Rate: 1100
+        Sondertilgung: 0
+        Aufgenommene Summe: 60000
+    KfW 358 (Dämmung):
+      1:
+        Zinssatz: 0.01
+        Monatliche Rate: 350
+        Sondertilgung: 0
+        Aufgenommene Summe: 100000
+  05-experiment-mit-bilanz:
+    Bank (Haus+Sanierung):    # Hauptkredit Sparkasse / VR-Bank / etc.
+      1:
+        Zinssatz: 0.0385
+        Monatliche Rate: 1500
+        Sondertilgung: 0
+        Aufgenommene Summe: 305000
+    KfW 124 (Eigenheimerwerb):           # KfW Kredit 124 - Eigentumserwerb
+      1:
+        Zinssatz: 0.0371
+        Monatliche Rate: 500
+        Sondertilgung: 0
+        Aufgenommene Summe: 100000
+    Kauf-Nk. (Haus):          # Kaufnebenkosten - Privatkredit
+      1:
+        Zinssatz: 0.02
+        Monatliche Rate: 710
+        Sondertilgung: 0
+        Aufgenommene Summe: 60000
+    KfW 358 (Dämmung):
+      1:
+        Zinssatz: 0.017
+        Monatliche Rate: 400
+        Sondertilgung: 0
+        Aufgenommene Summe: 120000
+  06-experiment-mit-Nachschuss:
+    Bank (Haus+Sanierung): # Hauptkredit Sparkasse / VR-Bank / etc.
+      1:
+        Zinssatz: 0.0385
+        Monatliche Rate: 1300
+        Sondertilgung: 0
+        Aufgenommene Summe: 255000
+    KfW 124 (Eigenheimerwerb): # KfW Kredit 124 - Eigentumserwerb
+      1:
+        Zinssatz: 0.0371
+        Monatliche Rate: 500
+        Sondertilgung: 0
+        Aufgenommene Summe: 100000
+    Kauf-Nk. (Haus): # Kaufnebenkosten - Privatkredit
+      1:
+        Zinssatz: 0.02
+        Monatliche Rate: 1000
+        Sondertilgung: 0
+        Aufgenommene Summe: 60000
+    KfW 261 (energieeffiziens):
+      1:
+        Zinssatz: 0
+        Monatliche Rate: 0
+        Sondertilgung: 0
+        Aufgenommene Summe: 1
+      6:
+        Zinssatz: 0.0269
+        Monatliche Rate: 500
+        Sondertilgung: 0
+        Aufgenommene Summe: 120000 #85000
+        #    KfW 358 (Dämmung):
+        #      1:
+        #        Zinssatz: 0.017
+        #        Monatliche Rate: 300
+        #        Sondertilgung: 0
+        #        Aufgenommene Summe: 65000
+  07-innen-minimal-im-ersten-jahr:
+    Bank (Haus+Sanierung): # Hauptkredit Sparkasse / VR-Bank / etc.
+      1:
+        Zinssatz: 0.04
+        Monatliche Rate: 1200
+        Sondertilgung: 0
+        Aufgenommene Summe: 230000
+    KfW 124 (Eigenheimerwerb): # KfW Kredit 124 - Eigentumserwerb
+      1:
+        Zinssatz: 0.0371
+        Monatliche Rate: 500
+        Sondertilgung: 0
+        Aufgenommene Summe: 100000
+    Kauf-Nk. (Haus): # Kaufnebenkosten - Privatkredit
+      1:
+        Zinssatz: 0.02
+        Monatliche Rate: 833
+        Sondertilgung: 0
+        Aufgenommene Summe: 45000
+    Privat - Maike: # Kaufnebenkosten - Privatkredit
+      1:
+        Zinssatz: 0.022
+        Monatliche Rate: 177.83
+        Sondertilgung: 0
+        Aufgenommene Summe: 10000
+
+  08-Haus-pur-ohne-alles:
+    Bank (Haus+Sanierung): # Hauptkredit Sparkasse / VR-Bank / etc.
+      1:
+        Zinssatz: 0.04
+        Monatliche Rate: 1100
+        Sondertilgung: 0
+        Aufgenommene Summe: 215000
+    KfW 124 (Eigenheimerwerb): # KfW Kredit 124 - Eigentumserwerb
+      1:
+        Zinssatz: 0.0371
+        Monatliche Rate: 500
+        Sondertilgung: 0
+        Aufgenommene Summe: 100000
+    Kauf-Nk. (Haus): # Kaufnebenkosten - Privatkredit
+      1:
+        Zinssatz: 0.02
+        Monatliche Rate: 1000
+        Sondertilgung: 0
+        Aufgenommene Summe: 55000
+
