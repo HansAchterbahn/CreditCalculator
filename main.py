@@ -58,9 +58,7 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
         print('-', kreditgeber)
 
         # Init der Variablen
-        jahr = 0
-        monat_letzter = 0
-        monatliche_rate_letzte = 0
+        jahr = 1
         restschuld = 0
 
         # Ausgangs Dict anlegen/zurücksetzen
@@ -69,7 +67,7 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
             'Restschulden': [],
             'Zinsen': [],
             'Tilgungen': [],
-            'Monatliche Rate': [],
+            'Jährliche Rate': [],
             'Sondertilgungen': [],
             'Aufgenommene Summen': []
         })
@@ -129,7 +127,7 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
             kredit_out['Jahre'].append(jahr)                      # aktuelles Laufzeitjahr
             kredit_out['Tilgungen'].append(tilgung)               # aktuell zu zahlende Jahrestilgung
             kredit_out['Sondertilgungen'].append(kondition['Sondertilgung'])   # aktuell zu zahlende Sondertilgung
-            kredit_out['Monatliche Rate'].append(tilgung + jahres_zinsen)
+            kredit_out['Jährliche Rate'].append(tilgung + jahres_zinsen)
             kredit_out['Aufgenommene Summen'].append(kondition['Aufgenommene Summe'])
 
             # Falls die Laufzeit größer als 100 Jahre ist, wird die Schleife verlassen
@@ -151,7 +149,7 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
         'Restschulden':         [],
         'Zinsen':               [],
         'Tilgungen':            [],
-        'Monatliche Rate':      [],
+        'Jährliche Rate':      [],
         'Sondertilgungen':      [],
         'Aufgenommene Summen':  [],
     })
@@ -207,10 +205,14 @@ def erstelle_kredit_plot(kredite_out):
         ax = axs[0][i]
 
         # Plot Titel erstellen (Kreditgeber, Zinsen, Monatliche Rate)
-        zins = round(kredit["Zinsen"][0]/kredit["Aufgenommene Summen"][0], 3)
-        rate = round(kredit["Monatliche Rate"][0]/12, 2)
-        ax.set_title(kreditgeber+"\n", weight='bold', fontsize=16)
-        ax.set_title("Zins: "+str(zins)+" %", loc = "left")
+        aufgenommene_summe = round(sum(kredit["Aufgenommene Summen"])/1000) # in tausend €
+        zins = round(kredit["Zinsen"][0]/kredit["Aufgenommene Summen"][0]*100, 2)
+        rate = round(kredit["Jährliche Rate"][0]/12, 2)
+        ax.set_title(kreditgeber+"\n\n", weight='bold', fontsize=16)
+        ax.set_title(
+            "Summe: "+str(aufgenommene_summe)+" t€\n"+\
+            "Zins:  "+str(zins)+" %", loc = "left"
+        )
         ax.set_title("Rate: "+str(rate)+" €", loc = "right")
 
 
@@ -226,7 +228,7 @@ def erstelle_kredit_plot(kredite_out):
         ax = axs[1][i]
         ax.plot(kredit['Jahre'], np.array(kredit['Tilgungen']) / 12, "-*", label='Tilgung')
         ax.plot(kredit['Jahre'], np.array(kredit['Zinsen']) / 12, "-*", label='Zinsen')
-        ax.plot(kredit['Jahre'], np.array(kredit['Monatliche Rate']) / 12, "-*", label='Monatliche Rate')
+        ax.plot(kredit['Jahre'], np.array(kredit['Jährliche Rate']) / 12, "-*", label='Monatliche Rate')
         ax.plot(kredit['Jahre'], np.array(kredit['Sondertilgungen']) / 12, "*", label='Sondertilgungen')
         ax.legend()
         #ax.set_xlabel("Jahre")
@@ -241,7 +243,13 @@ def erstelle_kredit_plot(kredite_out):
 if __name__ == '__main__':
     konditionen = eingangswerte(
         #"01-drklein-kassler-sparkasse"
-        "03-wuestenrot-grob"
+        #"02-KfW-124-komplett-ideal"
+        #"03-wuestenrot-grob"
+        #"04-wuestenrot-grob-mit-KfW358"
+        #"05-experiment-mit-bilanz"
+        #"06-experiment-mit-Nachschuss"
+        "07-innen-minimal-im-ersten-jahr"
+        #"08-Haus-pur-ohne-alles"
     )
     output = berrechnung_der_kredite(konditionen)
 
