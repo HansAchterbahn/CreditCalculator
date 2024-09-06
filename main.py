@@ -10,11 +10,13 @@ def add_list(a_list:list, b_list:list):
     # method to add two lists together and return the result
     return [a + b for a, b in zip_longest(a_list, b_list, fillvalue=0)]
 
-def eingangswerte(kredit_paket:str):
+def eingangswerte(*kredit_pakete:str):
     # YAML Datei mit Kreditdaten lesen
     with open("loan.yaml", mode="rb") as file:
         result = yaml.safe_load(file)
-        kreditgeberkonditionen = result[kredit_paket]
+        kreditgeberkonditionen = {}
+        for paket in kredit_pakete:
+            kreditgeberkonditionen.update(result[paket])
 
     print("Kreditgeberkonditionen")
     pprint(kreditgeberkonditionen)
@@ -190,7 +192,7 @@ def erstelle_kredit_plot(kredite_out, interval):
         # Plot Titel erstellen (Kreditgeber, Zinsen, Monatliche Rate)
         aufgenommene_summe = round(sum(kredit["Aufgenommene Summen"])/1000) # in tausend €
         zins = round(kredit["Zinsen"][0]/kredit["Aufgenommene Summen"][0]*100, 2)
-        rate = round(kredit["Jährliche Rate"][0]/12, 2)
+        rate = round(kredit["Jährliche Rate"][0]/year_divider, 2)
         ax.set_title(kreditgeber+"\n\n", weight='bold', fontsize=16)
         ax.set_title(
             "Summe: "+str(aufgenommene_summe)+" t€\n"+\
@@ -225,13 +227,8 @@ def erstelle_kredit_plot(kredite_out, interval):
 
 if __name__ == '__main__':
     konditionen = eingangswerte(
-        #"01-drklein-kassler-sparkasse"
-        #"02-KfW-124-komplett-ideal"
-        #"03-wuestenrot-grob"
-        #"04-wuestenrot-grob-mit-KfW358"
-        #"05-experiment-mit-bilanz"
-        #"06-experiment-mit-Nachschuss"
-        "07-innen-minimal-im-ersten-jahr"
+        #"01-Bank-innen-minimal-im-ersten-jahr",
+        "21-Privatkredite"
     )
     output = berrechnung_der_kredite(konditionen)
 

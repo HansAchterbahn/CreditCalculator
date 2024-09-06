@@ -1,160 +1,4 @@
-
-01-drklein-kassler-sparkasse: # 10 Jahre bei 4,00 %
-  Bank (Haus+Sanierung):    # Hauptkredit Sparkasse / VR-Bank / etc.
-    1:
-      Zinssatz: 0.0416
-      Monatliche Rate: 1793.10
-      Sondertilgung: 0
-      Aufgenommene Summe: 387000
-    3:
-      Sondertilgung: 12000
-  KfW 124 (Haus):           # KfW Kredit 124 - Eigentumserwerb
-    1:
-      Zinssatz: 0.0385
-      Monatliche Rate: 313.33
-      Sondertilgung: 0
-      Aufgenommene Summe: 100000
-    2:
-      Monatliche Rate: 472.36
-  Kauf-Nk. (Haus):          # Kaufnebenkosten - Privatkredit
-    1:
-      Zinssatz: 0.03
-      Monatliche Rate: 1200
-      Sondertilgung: 0
-      Aufgenommene Summe: 37500
-02-KfW-124-komplett-ideal:
-  Bank (Haus+Sanierung):    # Hauptkredit Sparkasse / VR-Bank / etc.
-    1:
-      Zinssatz: 0.0371
-      Monatliche Rate: 1700
-      Sondertilgung: 0
-      Aufgenommene Summe: 350000
-    3:
-      Sondertilgung: 12000
-  KfW 124 (Haus):           # KfW Kredit 124 - Eigentumserwerb
-    1:
-      Zinssatz: 0.0371
-      Monatliche Rate: 500
-      Sondertilgung: 0
-      Aufgenommene Summe: 100000
-  Kauf-Nk. (Haus):          # Kaufnebenkosten - Privatkredit
-    1:
-      Zinssatz: 0.03
-      Monatliche Rate: 1200
-      Sondertilgung: 0
-      Aufgenommene Summe: 37500
-03-wuestenrot-grob:
-  Bank (Haus+Sanierung):    # Hauptkredit Sparkasse / VR-Bank / etc.
-    1:
-      Zinssatz: 0.0385
-      Monatliche Rate: 1500
-      Sondertilgung: 0
-      Aufgenommene Summe: 310000
-    3:
-      Monatliche Rate: 1700
-      #Sondertilgung: 12000
-  KfW 124 (Haus):           # KfW Kredit 124 - Eigentumserwerb
-    1:
-      Zinssatz: 0.0371
-      Monatliche Rate: 500
-      Sondertilgung: 0
-      Aufgenommene Summe: 100000
-  Kauf-Nk. (Haus):          # Kaufnebenkosten - Privatkredit
-    1:
-      Zinssatz: 0.03
-      Monatliche Rate: 1400
-      Sondertilgung: 0
-      Aufgenommene Summe: 60000
-04-wuestenrot-grob-mit-KfW358:
-  Bank (Haus+Sanierung):    # Hauptkredit Sparkasse / VR-Bank / etc.
-    1:
-      Zinssatz: 0.0385
-      Monatliche Rate: 1500
-      Sondertilgung: 0
-      Aufgenommene Summe: 315000
-    #5:
-      #Monatliche Rate: 1700
-      #Sondertilgung: 12000
-  KfW 124 (Eigenheimerwerb):           # KfW Kredit 124 - Eigentumserwerb
-    1:
-      Zinssatz: 0.0371
-      Monatliche Rate: 500
-      Sondertilgung: 0
-      Aufgenommene Summe: 100000
-  Kauf-Nk. (Haus):          # Kaufnebenkosten - Privatkredit
-    1:
-      Zinssatz: 0.02
-      Monatliche Rate: 1100
-      Sondertilgung: 0
-      Aufgenommene Summe: 60000
-  KfW 358 (Dämmung):
-    1:
-      Zinssatz: 0.01
-      Monatliche Rate: 350
-      Sondertilgung: 0
-      Aufgenommene Summe: 100000
-05-experiment-mit-bilanz:
-  Bank (Haus+Sanierung):    # Hauptkredit Sparkasse / VR-Bank / etc.
-    1:
-      Zinssatz: 0.0385
-      Monatliche Rate: 1500
-      Sondertilgung: 0
-      Aufgenommene Summe: 305000
-  KfW 124 (Eigenheimerwerb):           # KfW Kredit 124 - Eigentumserwerb
-    1:
-      Zinssatz: 0.0371
-      Monatliche Rate: 500
-      Sondertilgung: 0
-      Aufgenommene Summe: 100000
-  Kauf-Nk. (Haus):          # Kaufnebenkosten - Privatkredit
-    1:
-      Zinssatz: 0.02
-      Monatliche Rate: 710
-      Sondertilgung: 0
-      Aufgenommene Summe: 60000
-  KfW 358 (Dämmung):
-    1:
-      Zinssatz: 0.017
-      Monatliche Rate: 400
-      Sondertilgung: 0
-      Aufgenommene Summe: 120000
-06-experiment-mit-Nachschuss:
-  Bank (Haus+Sanierung): # Hauptkredit Sparkasse / VR-Bank / etc.
-    1:
-      Zinssatz: 0.0385
-      Monatliche Rate: 1300
-      Sondertilgung: 0
-      Aufgenommene Summe: 255000
-  KfW 124 (Eigenheimerwerb): # KfW Kredit 124 - Eigentumserwerb
-    1:
-      Zinssatz: 0.0371
-      Monatliche Rate: 500
-      Sondertilgung: 0
-      Aufgenommene Summe: 100000
-  Kauf-Nk. (Haus): # Kaufnebenkosten - Privatkredit
-    1:
-      Zinssatz: 0.02
-      Monatliche Rate: 1000
-      Sondertilgung: 0
-      Aufgenommene Summe: 60000
-  KfW 261 (energieeffiziens):
-    1:
-      Zinssatz: 0
-      Monatliche Rate: 0
-      Sondertilgung: 0
-      Aufgenommene Summe: 1
-    6:
-      Zinssatz: 0.0269
-      Monatliche Rate: 500
-      Sondertilgung: 0
-      Aufgenommene Summe: 120000 #85000
-      #    KfW 358 (Dämmung):
-      #      1:
-      #        Zinssatz: 0.017
-      #        Monatliche Rate: 300
-      #        Sondertilgung: 0
-      #        Aufgenommene Summe: 65000
-07-innen-minimal-im-ersten-jahr:
+01-Bank-innen-minimal-im-ersten-jahr:
   Bank (Haus+Sanierung): # Hauptkredit Sparkasse / VR-Bank / etc.
     1:
       Zinssatz: 0.04
@@ -164,49 +8,50 @@
   KfW 124 (Eigenheimerwerb): # KfW Kredit 124 - Eigentumserwerb
     1:
       Zinssatz: 0.0371
-      Monatliche Rate: 500
+      Monatliche Rate: 972.391666667
       Sondertilgung: 0
       Aufgenommene Summe: 100000
-  Kauf-Nk. (Haus): # Kaufnebenkosten - Privatkredit
+21-Privatkredite:
+  Privat - Amelie: # Kaufnebenkosten - Privatkredit
     1:
       Zinssatz: 0.02
-      Monatliche Rate: 581.48
+      Monatliche Rate: 88.40
       Sondertilgung: 0
-      Aufgenommene Summe: 30900
-  Privat - Maike: # Kaufnebenkosten - Privatkredit
+      Aufgenommene Summe: 5000
+  Privat - Andrea: # Kaufnebenkosten - Privatkredit
     1:
-      Zinssatz: 0.022
-      Monatliche Rate: 177.83
+      Zinssatz: 0.01
+      Monatliche Rate: 17.17
       Sondertilgung: 0
-      Aufgenommene Summe: 10000
-  Privat - Filou: # Kaufnebenkosten - Privatkredit
-    1:
-      Zinssatz: 0.0
-      Monatliche Rate: 58.34
-      Sondertilgung: 0
-      Aufgenommene Summe: 3500
-  Privat - Alex&Christiane: # Kaufnebenkosten - Privatkredit
+      Aufgenommene Summe: 1000
+  Privat - Christiane&Alex: # Kaufnebenkosten - Privatkredit
     1:
       Zinssatz: 0.02
-      Monatliche Rate: 63.65
+      Monatliche Rate: 63.648333333
       Sondertilgung: 0
       Aufgenommene Summe: 3600
-  Privat - Micha: # Kaufnebenkosten - Privatkredit
+  Privat - Christian: # Kaufnebenkosten - Privatkredit
     1:
-      Zinssatz: 0.02
-      Monatliche Rate: 35.36
+      Zinssatz: 0.0
+      Monatliche Rate: 104.166666667
       Sondertilgung: 0
-      Aufgenommene Summe: 2000
+      Aufgenommene Summe: 5000
   Privat - Julika&Thomas: # Kaufnebenkosten - Privatkredit
     1:
       Zinssatz: 0.0
-      Monatliche Rate: 83.34
+      Monatliche Rate: 83.333333334
       Sondertilgung: 0
       Aufgenommene Summe: 5000
   Privat - Kai-Hendrik: # Kaufnebenkosten - Privatkredit
     1:
       Zinssatz: 0.02
-      Monatliche Rate: 176.80
+      Monatliche Rate: 176.799166667
+      Sondertilgung: 0
+      Aufgenommene Summe: 10000
+  Privat - Maike: # Kaufnebenkosten - Privatkredit
+    1:
+      Zinssatz: 0.022
+      Monatliche Rate: 177.83
       Sondertilgung: 0
       Aufgenommene Summe: 10000
   Privat - Marita: # Kaufnebenkosten - Privatkredit
@@ -215,16 +60,22 @@
       Monatliche Rate: 171.70
       Sondertilgung: 0
       Aufgenommene Summe: 10000
-  Privat - Andrea: # Kaufnebenkosten - Privatkredit
+  Privat - Micha: # Kaufnebenkosten - Privatkredit
     1:
-      Zinssatz: 0.01
-      Monatliche Rate: 17.17
+      Zinssatz: 0.02
+      Monatliche Rate: 35.360833333
       Sondertilgung: 0
-      Aufgenommene Summe: 1000
+      Aufgenommene Summe: 2000
+  Privat - Filou: # Kaufnebenkosten - Privatkredit
+    1:
+      Zinssatz: 0.0
+      Monatliche Rate: 58.333333334
+      Sondertilgung: 0
+      Aufgenommene Summe: 3500
   Privat - Tiam: # Kaufnebenkosten - Privatkredit
     1:
       Zinssatz: 0.02
-      Monatliche Rate: 23.20
+      Monatliche Rate: 23.193333333
       Sondertilgung: 0
       Aufgenommene Summe: 2500
 
