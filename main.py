@@ -169,8 +169,15 @@ def erstelle_kredit_tabellen(kredite_out):
         print(tabulate(kredit, headers='keys', tablefmt='mixed_outline'))
         pd.DataFrame(kredit).to_excel('export/' + kreditgeber + '.xlsx')
 
-def erstelle_kredit_plot(kredite_out):
+def erstelle_kredit_plot(kredite_out, interval):
     # Plot der Ergebnisse
+    # interval: monthly / yearly
+    if interval == "monthly":
+        year_divider = 12
+    else:
+        year_divider = 1
+
+
     kredit_anzahl = len(kredite_out)
     fig, axs = plt.subplots(nrows=2, ncols=kredit_anzahl, figsize=(4*kredit_anzahl,7), layout="constrained")
     fig.supxlabel("Jahre")
@@ -202,10 +209,10 @@ def erstelle_kredit_plot(kredite_out):
 
         # Aktuellen Plot für Tilgung, Zinsen, Rate und Sondertilgung festlegen & plotten
         ax = axs[1][i]
-        ax.plot(kredit['Jahre'], np.array(kredit['Tilgungen']) / 12, "-*", label='Tilgung')
-        ax.plot(kredit['Jahre'], np.array(kredit['Zinsen']) / 12, "-*", label='Zinsen')
-        ax.plot(kredit['Jahre'], np.array(kredit['Jährliche Rate']) / 12, "-*", label='Monatliche Rate')
-        ax.plot(kredit['Jahre'], np.array(kredit['Sondertilgungen']) / 12, "*", label='Sondertilgungen')
+        ax.plot(kredit['Jahre'], np.array(kredit['Tilgungen']) / year_divider, "-*", label='Tilgung')
+        ax.plot(kredit['Jahre'], np.array(kredit['Zinsen']) / year_divider, "-*", label='Zinsen')
+        ax.plot(kredit['Jahre'], np.array(kredit['Jährliche Rate']) / year_divider, "-*", label='Rate')
+        ax.plot(kredit['Jahre'], np.array(kredit['Sondertilgungen']) / year_divider, "*", label='Sondertilgungen')
         ax.legend()
         #ax.set_xlabel("Jahre")
         if i == 0:
@@ -230,7 +237,7 @@ if __name__ == '__main__':
 
     erstelle_kredit_zusammenfassung(output)
     erstelle_kredit_tabellen(output)
-    erstelle_kredit_plot(output)
+    erstelle_kredit_plot(output, "yearly")
 
 
 
