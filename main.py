@@ -14,31 +14,7 @@ def eingangswerte(kredit_paket:str):
     # YAML Datei mit Kreditdaten lesen
     with open("loan.yaml", mode="rb") as file:
         result = yaml.safe_load(file)
-        einzel_kosten = result["Einzelkosten"]["EK01"]
-        kreditgeberkonditionen = result["Kreditgeberkonditionen"][kredit_paket]
-
-    # Ausgabe der Einzelkosten
-    print("Einzelkosten")
-    pprint(einzel_kosten)
-    print()
-
-    # Ermitteln der relevanten Kosten für die einzelnen Kredite
-    gesamt_kosten = sum(einzel_kosten.values())
-    grundstuecks_kosten = (
-        einzel_kosten['Haus+Grund Kaufpreis'] +
-        einzel_kosten['Wiese 1+2 Kaufpreis'] +
-        einzel_kosten['Acker Kaufpreis']
-    )
-
-    # # Kreditsummen, die sich aus den Initialen Kosten ergeben
-    # kfw_124 = 100e3            # es gibt 100.000 € für den Erwerb von Eigenheimen mit 3.71% Zinsen von der KfW (124)
-    # hauskredit_bank = gesamt_kosten - kfw_124   # Von den initialen Kosten wird KfW Kredit abgezogen
-    # kaufnebenkosten = grundstuecks_kosten * 0.1     # die Kaufnebenkosten betragen in der Regel 10% den Kaufpreises
-    #
-    # # Schreibe die Kreditsummen ins Dict
-    # kreditgeberkonditionen["Bank (Haus+Sanierung)"][0]["Aufgenommene Summe"] = hauskredit_bank
-    # kreditgeberkonditionen["KfW 124 (Haus)"][0]["Aufgenommene Summe"] = kfw_124
-    # kreditgeberkonditionen["Kauf-Nk. (Haus)"][0]["Aufgenommene Summe"] = kaufnebenkosten
+        kreditgeberkonditionen = result[kredit_paket]
 
     print("Kreditgeberkonditionen")
     pprint(kreditgeberkonditionen)
@@ -92,12 +68,12 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
 
             # Neue Kreditsumme zu Restschulden addieren (Initial + Nachschuss)
             restschuld += kondition['Aufgenommene Summe']
+            kredit_out['Restschulden'].append(restschuld)         # Restschuld in Euro über die Laufzeit in Jahren
 
             # Jahreszinsen berechnen
             jahres_zinsen   = restschuld * kondition['Zinssatz']
             kredit_out['Zinsen'].append(jahres_zinsen)
             restschuld      = restschuld + jahres_zinsen
-            kredit_out['Restschulden'].append(restschuld)         # Restschuld in Euro über die Laufzeit in Jahren
 
             # Monatsweise Abrechnung der Rate, um den letzten Monat exakt bestimmen zu können
             raten_monatlich = []
@@ -249,7 +225,6 @@ if __name__ == '__main__':
         #"05-experiment-mit-bilanz"
         #"06-experiment-mit-Nachschuss"
         "07-innen-minimal-im-ersten-jahr"
-        #"08-Haus-pur-ohne-alles"
     )
     output = berrechnung_der_kredite(konditionen)
 
