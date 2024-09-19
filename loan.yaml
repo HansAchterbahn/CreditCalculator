@@ -1,21 +1,17 @@
 01-Bank-innen-minimal-im-ersten-jahr:
-  Bank Darlehen: # Hauptkredit Sparkasse / VR-Bank / etc.
+  Bank Wüstenrot: # Hauptkredit Sparkasse / VR-Bank / etc.
+    # Darlehenszeitraum beginnt
     1:
       Zinssatz: 0.0365 #0.0411 #0.0365
       Monatliche Rate: 905.20
       Sondertilgung: 0
       Aufgenommene Summe: 297600
-    10:
-      Sondertilgung: 297600
-  Bank Bausparen:
-    1:
-      Zinssatz: 0.0
-      Monatliche Rate: 750.0
-      Sondertilgung: 0
-      Aufgenommene Summe: 297600
+    # Bausparzeitraum beginnt
     10:
       Zinssatz: 0.02
       Monatliche Rate: 1655.2
+      Sondertilgung: 90000 # 750€ (min. 250€) * 12 Monate * 10 Jahre
+    11:
       Sondertilgung: 0
   KfW 124 (Eigenheimerwerb): # KfW Kredit 124 - Eigentumserwerb
     1:
