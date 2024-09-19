@@ -70,12 +70,12 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
 
             # Neue Kreditsumme zu Restschulden addieren (Initial + Nachschuss)
             restschuld += kondition['Aufgenommene Summe']
-            kredit_out['Restschulden'].append(restschuld)         # Restschuld in Euro über die Laufzeit in Jahren
+            kredit_out['Restschulden'].append(round(restschuld, 2))         # Restschuld in Euro über die Laufzeit in Jahren
 
             # Jahreszinsen berechnen
-            jahres_zinsen   = restschuld * kondition['Zinssatz']
-            kredit_out['Zinsen'].append(jahres_zinsen)
-            restschuld      = restschuld + jahres_zinsen
+            zinsen_jahr   = round(restschuld * kondition['Zinssatz'], 2)
+            kredit_out['Zinsen'].append(zinsen_jahr)
+            restschuld      = restschuld + zinsen_jahr
 
             # Monatsweise Abrechnung der Rate, um den letzten Monat exakt bestimmen zu können
             raten_monatlich = []
@@ -98,21 +98,21 @@ def berrechnung_der_kredite(kreditgeber_konditionen):
                 kondition['Sondertilgung'] = 0
 
             # Berechnung der Restschuld und Jahreszahl erhöhen
-            rate_jahr     = sum(raten_monatlich)
-            tilgung         = rate_jahr - jahres_zinsen
+            rate_jahr     = round(sum(raten_monatlich),2)
+            tilgung_jahr  = round(rate_jahr - zinsen_jahr,2)
 
             # Daten für Graphen aufnehmen
             kredit_out['Jahre'].append(jahr)                      # aktuelles Laufzeitjahr
-            kredit_out['Tilgungen'].append(tilgung)               # aktuell zu zahlende Jahrestilgung
+            kredit_out['Tilgungen'].append(tilgung_jahr)               # aktuell zu zahlende Jahrestilgung
             kredit_out['Sondertilgungen'].append(kondition['Sondertilgung'])   # aktuell zu zahlende Sondertilgung
-            kredit_out['Jährliche Rate'].append(tilgung + jahres_zinsen)
+            kredit_out['Jährliche Rate'].append(tilgung_jahr + zinsen_jahr)
             kredit_out['Aufgenommene Summen'].append(kondition['Aufgenommene Summe'])
 
             # Falls die Laufzeit größer als 100 Jahre ist, wird die Schleife verlassen
             if jahr > 100:
                 break
 
-            if restschuld <= 0:
+            if restschuld <= 0.004:
                 break
 
             # Jahr
