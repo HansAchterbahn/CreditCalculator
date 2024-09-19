@@ -227,14 +227,14 @@ def erstelle_kredit_plot(kredite_out, interval):
 
 if __name__ == '__main__':
     konditionen = eingangswerte(
-        #"01-Bank-innen-minimal-im-ersten-jahr",
+        "01-Bank-innen-minimal-im-ersten-jahr",
         "21-Privatkredite"
     )
     output = berrechnung_der_kredite(konditionen)
 
     erstelle_kredit_zusammenfassung(output)
     erstelle_kredit_tabellen(output)
-    erstelle_kredit_plot(output, "yearly")
+    erstelle_kredit_plot(output, "monthly")
 
 
 

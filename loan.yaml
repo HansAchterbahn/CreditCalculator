@@ -1,16 +1,28 @@
 01-Bank-innen-minimal-im-ersten-jahr:
-  Bank (Haus+Sanierung): # Hauptkredit Sparkasse / VR-Bank / etc.
+  Bank Darlehen: # Hauptkredit Sparkasse / VR-Bank / etc.
     1:
-      Zinssatz: 0.04
-      Monatliche Rate: 1200
+      Zinssatz: 0.0365 #0.0411 #0.0365
+      Monatliche Rate: 905.20
       Sondertilgung: 0
-      Aufgenommene Summe: 230000
+      Aufgenommene Summe: 297600
+    10:
+      Sondertilgung: 297600
+  Bank Bausparen:
+    1:
+      Zinssatz: 0.0
+      Monatliche Rate: 750.0
+      Sondertilgung: 0
+      Aufgenommene Summe: 297600
+    10:
+      Zinssatz: 0.02
+      Monatliche Rate: 1655.2
+      Sondertilgung: 0
   KfW 124 (Eigenheimerwerb): # KfW Kredit 124 - Eigentumserwerb
     1:
-      Zinssatz: 0.0371
-      Monatliche Rate: 972.391666667
+      Zinssatz: 0.0346 #0.0338
+      Monatliche Rate: 301.23
       Sondertilgung: 0
-      Aufgenommene Summe: 100000
+      Aufgenommene Summe: 73000
 21-Privatkredite:
   Privat - Amelie: # Kaufnebenkosten - Privatkredit
     1:
