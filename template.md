@@ -1,6 +1,6 @@
 ---
 title: Tilgungsplan - {{kreditgeber}}
-author: Mario Hesse & Katharina Fricke
+author: "Kreditnehmer:innen: Mario Hesse u. Katharina Fricke"
 date: \today
 ---
 
@@ -10,10 +10,10 @@ date: \today
 - Zinssatz: {{zinssatz}} %
 - Jährliche Rate: {{jaehrliche_rate}} €
 
-## Grafische Darstellung
+## Grafisch
 
 ![](export/{{tilgung_grafik}})
 
-## Tabellarische Auflistung
+## Tabellarisch
 
 {{tilgung_tabelle}}
