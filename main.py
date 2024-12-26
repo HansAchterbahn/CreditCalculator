@@ -1,3 +1,5 @@
+from unittest.mock import inplace
+
 import matplotlib.pyplot as plt
 import numpy as np
 from itertools import zip_longest
@@ -5,6 +7,7 @@ import pandas as pd
 from tabulate import tabulate
 import yaml
 from pprint import pprint
+import subprocess
 
 def add_list(a_list:list, b_list:list):
     # method to add two lists together and return the result
@@ -14,9 +17,9 @@ def eingangswerte(*kredit_pakete:str):
     # YAML Datei mit Kreditdaten lesen
     with open("loan.yaml", mode="rb") as file:
         result = yaml.safe_load(file)
-        kreditgeberkonditionen = {}
-        for paket in kredit_pakete:
-            kreditgeberkonditionen.update(result[paket])
+    kreditgeberkonditionen = {}
+    for paket in kredit_pakete:
+        kreditgeberkonditionen.update(result[paket])
 
     print("Kreditgeberkonditionen")
     pprint(kreditgeberkonditionen)
@@ -166,10 +169,20 @@ def erstelle_kredit_zusammenfassung(kredite_out):
 def erstelle_kredit_tabellen(kredite_out):
     # Erstellen der Kreditverlauf-Tabelle
     for kreditgeber, kredit in kredite_out.items():
+        table_mixed_outline = tabulate(kredit, headers='keys', tablefmt='mixed_outline', floatfmt='.2f')
+        kredit_reduced_cols = kredit.copy()
+        kredit_reduced_cols.popitem()
+        kredit_reduced_cols.popitem()
+        table_markdown = tabulate(kredit_reduced_cols, headers='keys', tablefmt='pipe', floatfmt='.2f')
+
         print()
         print(kreditgeber)
-        print(tabulate(kredit, headers='keys', tablefmt='mixed_outline'))
+        print(table_mixed_outline)
+
         pd.DataFrame(kredit).to_excel('export/' + kreditgeber + '.xlsx')
+
+        with open('export/'+kreditgeber+'.table', 'w') as table_file:
+            table_file.write(table_markdown)
 
 def erstelle_kredit_plot(kredite_out, interval):
     # Plot der Ergebnisse
@@ -225,18 +238,94 @@ def erstelle_kredit_plot(kredite_out, interval):
     plt.savefig('export/Kredit_Kennlinien.jpg')
     plt.show()
 
+def erstelle_kredit_plot_singles(kredite_out, interval):
+    # Plot der Ergebnisse
+    # interval: monthly / yearly
+    if interval == "monthly":
+        year_divider = 12
+    else:
+        year_divider = 1
+
+
+    kredit_anzahl = len(kredite_out)
+    for i, (kreditgeber, kredit)in enumerate(kredite_out.items()):
+
+        # figure definieren
+        fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(9,4), layout="constrained")
+
+        # Restschulden festlegen & plotten
+        ax = axs[0]
+        ax.plot(kredit['Jahre'], np.array(kredit['Restschulden']) / 1000, "-*", label='Restschulden')
+        ax.legend()
+        ax.set_xlabel("Jahre")
+        ax.set_ylabel("Tausend Euro")
+        ax.grid(True)
+
+        # Plot für Tilgung, Zinsen, Rate und Sondertilgung festlegen & plotten
+        ax = axs[1]
+        ax.plot(kredit['Jahre'], np.array(kredit['Tilgungen']) / year_divider, "-*", label='Tilgung')
+        ax.plot(kredit['Jahre'], np.array(kredit['Zinsen']) / year_divider, "-*", label='Zinsen')
+        ax.plot(kredit['Jahre'], np.array(kredit['Jährliche Rate']) / year_divider, "-*", label='Rate')
+        ax.plot(kredit['Jahre'], np.array(kredit['Sondertilgungen']) / year_divider, "*", label='Sondertilgungen')
+        ax.legend()
+        ax.set_xlabel("Jahre")
+        ax.set_ylabel("Euro")
+        ax.grid(True)
+
+        # speichern und anzeigen des Plots
+        save_path = 'export/' + kreditgeber + '.jpg'
+        save_path = save_path.replace(' ', '_')
+        plt.savefig(save_path)
+        #plt.show()
+
+def erstelle_tilgungsplaene(kredit_output):
+    with open('template.md', 'r') as template:
+        md_text_template = template.read()
+
+    for i, (kreditgeber, kredit) in enumerate(kredit_output.items()):
+        print(kreditgeber)
+
+        aufgenommene_summe = round(sum(kredit["Aufgenommene Summen"])) # in tausend €
+        zins = round(kredit["Zinsen"][0]/kredit["Aufgenommene Summen"][0]*100, 2)
+        rate = round(kredit["Jährliche Rate"][0], 2)
+
+        md_text = md_text_template
+
+        with open('export/'+kreditgeber+'.table', 'r') as table:
+            md_table = table.read()
+
+        md_text = md_text.replace('{{kreditgeber}}', kreditgeber)
+        md_text = md_text.replace('{{aufgenommene_summe}}', str(aufgenommene_summe))
+        md_text = md_text.replace('{{zinssatz}}', str(zins))
+        md_text = md_text.replace('{{jaehrliche_rate}}', str(rate))
+        md_text = md_text.replace('{{tilgung_tabelle}}', md_table)
+        md_text = md_text.replace('{{tilgung_grafik}}', kreditgeber.replace(' ', '_')+'.jpg')
+
+        with open('export/'+kreditgeber+'.md', 'w') as md_file:
+            md_file.write(md_text)
+        try:
+            subprocess.run(['pandoc', 'export/'+kreditgeber+'.md', '-o', 'export/'+kreditgeber+'.pdf', '--variable=geometry:' + 'a4paper'])
+        except:
+            print('Was not able to create "' + kreditgeber+'.pdf".')
+
+
+
 if __name__ == '__main__':
+    # Kreditdaten einlesen und berechnen
     konditionen = eingangswerte(
         "01-Bank-innen-minimal-im-ersten-jahr",
         "21-Privatkredite"
     )
     output = berrechnung_der_kredite(konditionen)
 
+    # Kredit übersicht erstellen
     erstelle_kredit_zusammenfassung(output)
     erstelle_kredit_tabellen(output)
     erstelle_kredit_plot(output, "monthly")
 
-
+    # Tilgungspläne erstellen
+    erstelle_kredit_plot_singles(output, "yearly")
+    erstelle_tilgungsplaene(output)
 
 
 
